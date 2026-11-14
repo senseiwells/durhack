@@ -1,0 +1,16 @@
+logs/
+build
+out
+.idea/*
+!.idea/externalDependencies.xml
+.gradle
+.kotlin
+.lwjgl
+video/
+screenshots/
+gui-parameters/
+ffmpegOutput.txt
+ShaderError.glsl
+
+# native libraries extracted at runtime (ANGLE / MoltenVK)
+/*.dylib

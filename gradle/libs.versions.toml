@@ -1,0 +1,64 @@
+[versions]
+java                  = "25"
+kotlin                = "2.4.21"
+
+# OPENRNDR, the module catalogs for these are imported in settings.gradle.kts
+openrndr              = "0.5.0"
+orx                   = "0.5.0"
+
+kotlinx-coroutines    = "1.11.0"
+kotlinx-serialization = "1.13.0"
+kotlin-logging        = "8.0.7"
+kotlin-csv            = "1.10.0"
+jsoup                 = "1.24.1"
+
+# Logging
+slf4j                 = "2.0.20"
+log4j                 = "2.26.1"
+
+# Testing
+junit                 = "4.13.2"
+
+# Plugins
+shadow                = "9.6.1"
+jpackage              = "2.1.0"
+versions              = "0.67.0"
+
+[libraries]
+kotlin-script-runtime      = { module = "org.jetbrains.kotlin:kotlin-script-runtime"              , version.ref = "kotlin" }
+kotlinx-coroutines-core    = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core"           , version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core"        , version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json"        , version.ref = "kotlinx-serialization" }
+kotlin-logging             = { module = "io.github.oshai:kotlin-logging"                          , version.ref = "kotlin-logging" }
+kotlin-csv                 = { module = "com.github.doyaaaaaken:kotlin-csv-jvm"                   , version.ref = "kotlin-csv" }
+jsoup                      = { module = "org.jsoup:jsoup"                                         , version.ref = "jsoup" }
+
+# Logging
+slf4j-api                  = { module = "org.slf4j:slf4j-api"                                     , version.ref = "slf4j" }
+slf4j-nop                  = { module = "org.slf4j:slf4j-nop"                                     , version.ref = "slf4j" }
+slf4j-simple               = { module = "org.slf4j:slf4j-simple"                                  , version.ref = "slf4j" }
+log4j-slf4j2               = { module = "org.apache.logging.log4j:log4j-slf4j2-impl"              , version.ref = "log4j" }
+log4j-core                 = { module = "org.apache.logging.log4j:log4j-core"                     , version.ref = "log4j" }
+
+# Testing
+junit                      = { module = "junit:junit"                                             , version.ref = "junit" }
+
+[bundles]
+logging-none = [
+    "slf4j-nop",
+]
+logging-simple = [
+    "slf4j-simple",
+]
+logging-full = [
+    "log4j-slf4j2",
+    "log4j-core",
+]
+
+[plugins]
+kotlin-jvm            = { id = "org.jetbrains.kotlin.jvm"                 , version.ref = "kotlin" }
+kotlin-serialization  = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+shadow                = { id = "com.gradleup.shadow"                      , version.ref = "shadow" }
+jpackage              = { id = "org.panteleyev.jpackageplugin"            , version.ref = "jpackage" }
+versions              = { id = "io.github.ben-manes.versions"             , version.ref = "versions" }
+gitarchive-tomarkdown = { id = "org.openrndr.extra.gitarchiver.tomarkdown", version.ref = "orx" }
