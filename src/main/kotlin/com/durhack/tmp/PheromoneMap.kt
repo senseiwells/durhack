@@ -20,6 +20,7 @@ typealias Trail = MutableList<TrailPoint>
 private const val CACHE_WIDTH = 500
 private const val CACHE_HEIGHT = 500
 private const val RADIUS = 5.0
+private const val CLEANUP_THRESH = 1e-4
 
 class PheromoneMap {
     var nextTrailId = 0
@@ -52,6 +53,15 @@ class PheromoneMap {
         for (trail in trails.values)
             for (p in trail)
                 p.strength *= 0.95
+        cleanupTrails()
+    }
+
+    private fun cleanupTrails()
+    {
+        for (trail in trails.values)
+            trail.removeIf { point -> (point.strength < CLEANUP_THRESH) }
+
+        trails.entries.removeIf { (_, trail) -> (trail.isEmpty()) }
     }
 
     fun makeCache()

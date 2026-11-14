@@ -135,5 +135,10 @@ fun Program.renderDebug(buf: ColorBuffer, map: PheromoneMap)
     drawer.strokeWeight = 1.0
     drawer.fill = ColorRGBa.TRANSPARENT
     drawer.rectangle(cacheBounds)
-    drawer.strokeWeight = 0.0
+
+    // Draw trail
+    drawer.strokeWeight = 0.1
+    for (trail in map.trails.values)
+        for ((p0, p1) in trail.zipWithNext())
+            drawer.lineSegment(p0.pos, p1.pos)
 }
