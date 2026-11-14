@@ -23,21 +23,20 @@ private const val RADIUS = 5.0
 private const val CLEANUP_THRESH = 1e-4
 
 class PheromoneMap {
-    var nextTrailId = 0
-    var trails = mutableMapOf<Int, Trail> ()
+    var trails = mutableListOf<Trail>()
     var cache = DoubleArray(CACHE_WIDTH * CACHE_HEIGHT)
     var cacheBounds = Rectangle(Vector2(0.0, 0.0), 1.0, 1.0)
 
-    fun createTrail(): Int
+    fun createTrail(): Trail
     {
-        val trailId = nextTrailId++
-        trails[trailId] = mutableListOf()
-        return trailId
+        val trail = mutableListOf<TrailPoint>()
+        this.trails.add(trail)
+        return trail
     }
 
-    fun makePointSmell(trailId: Int, pos: Vector2)
+    fun makePointSmell(trail: Trail, pos: Vector2)
     {
-        trails[trailId]!!.add(TrailPoint(pos, 1.0))
+        trail.add(TrailPoint(pos, 1.0))
     }
 
     fun howSmelly(pos: Vector2): Double
@@ -50,7 +49,7 @@ class PheromoneMap {
 
     fun evaporate()
     {
-        for (trail in trails.values)
+        for (trail in trails)
             for (p in trail)
                 p.strength *= 0.95
         cleanupTrails()
@@ -58,24 +57,24 @@ class PheromoneMap {
 
     private fun cleanupTrails()
     {
-        for (trail in trails.values)
+        for (trail in trails)
             trail.removeIf { point -> (point.strength < CLEANUP_THRESH) }
 
-        trails.entries.removeIf { (_, trail) -> (trail.isEmpty()) }
+        trails.removeIf { trail -> trail.isEmpty() }
     }
 
     fun makeCache()
     {
         cache.fill(0.0)
 
-        if (this.trails.values.sumOf { it.size } <= 0) {
+        if (this.trails.sumOf { it.size } <= 0) {
             return
         }
 
         cacheBounds = getBounds()
         cacheBounds = cacheBounds.offsetEdges(RADIUS * 2)
 
-        for (trail in trails.values)
+        for (trail in trails)
             for ((p0, p1) in trail.zipWithNext())
                 depositSegment(p0, p1)
     }
@@ -132,7 +131,7 @@ class PheromoneMap {
         var maxX = Double.NEGATIVE_INFINITY
         var maxY = Double.NEGATIVE_INFINITY
 
-        for (trail in trails.values)
+        for (trail in trails)
         {
             for (trailPoint in trail)
             {
