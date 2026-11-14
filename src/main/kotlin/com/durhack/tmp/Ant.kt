@@ -5,13 +5,15 @@ import com.durhack.tmp.actions.RestingAction
 import org.openrndr.math.Vector2
 
 class Ant private constructor(
+    private val world: World,
     private val colony: Colony,
     val traits: Traits,
     var pos: Vector2,
     var dir: Double
 ) {
-    var happiness = 0
+    var happiness = 70
     var tiredness = 50
+    var hungriness = 0
 
     var currentAction: Action = RestingAction(this)
 
@@ -23,8 +25,8 @@ class Ant private constructor(
     }
 
     companion object {
-        fun create(colony: Colony, traits: Traits = Traits.random()): Ant {
-            return Ant(colony, traits, colony.pos, 0.0)
+        fun create(world: World, colony: Colony, traits: Traits = Traits.random()): Ant {
+            return Ant(world, colony, traits, colony.pos, 0.0)
         }
     }
 }

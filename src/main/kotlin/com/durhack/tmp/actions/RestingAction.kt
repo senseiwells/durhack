@@ -6,8 +6,7 @@ class RestingAction(
     override val ant: Ant
 ): Action {
     override fun act(): Action {
-        this.ant.tiredness--
-        if (this.ant.tiredness < 20) {
+        if (this.ant.hungriness > 30 && this.ant.tiredness < 20) {
             return AdventuringAction(this.ant)
         }
         return this
