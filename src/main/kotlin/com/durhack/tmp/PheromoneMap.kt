@@ -15,28 +15,28 @@ data class TrailPoint(
     var strength: Double
 )
 
-typealias Trail = MutableList<TrailPoint>
+typealias PheromoneTrail = MutableList<TrailPoint>
 
 private const val CACHE_WIDTH = 500
 private const val CACHE_HEIGHT = 500
 private const val RADIUS = 5.0
-private const val CLEANUP_THRESH = 1e-4
+private const val CLEANUP_THRESH = 1e-2
 
 class PheromoneMap {
-    var trails = mutableListOf<Trail>()
+    var trails = mutableListOf<PheromoneTrail>()
     var cache = DoubleArray(CACHE_WIDTH * CACHE_HEIGHT)
     var cacheBounds = Rectangle(Vector2(0.0, 0.0), 1.0, 1.0)
 
-    fun createTrail(): Trail
+    fun createTrail(): PheromoneTrail
     {
         val trail = mutableListOf<TrailPoint>()
         this.trails.add(trail)
         return trail
     }
 
-    fun makePointSmell(trail: Trail, pos: Vector2)
+    fun makePointSmell(trail: PheromoneTrail, pos: Vector2, pungency: Double = 1.0)
     {
-        trail.add(TrailPoint(pos, 1.0))
+        trail.add(TrailPoint(pos, pungency))
     }
 
     fun howSmelly(pos: Vector2): Double
@@ -51,7 +51,7 @@ class PheromoneMap {
     {
         for (trail in trails)
             for (p in trail)
-                p.strength *= 0.95
+                p.strength *= 0.993
         cleanupTrails()
     }
 
@@ -119,7 +119,7 @@ class PheromoneMap {
                 val worldPos = cachePointToWorld(IntVector2(cx, cy))
                 val dist = distToLine(p0.pos, p1.pos, worldPos)
                 val smell = strength / exp(dist * 2.0)
-                cache[cy * CACHE_WIDTH + cx] += smell
+                cache[cy * CACHE_WIDTH + cx] = max(cache[cy * CACHE_WIDTH + cx], smell)
             }
         }
     }

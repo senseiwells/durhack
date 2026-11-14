@@ -19,6 +19,8 @@ class Ant private constructor(
 ) {
     val id = ID_COUNTER++
 
+    val adventuringTrail = mutableListOf<Vector2>()
+
     var happiness = 70
     var tiredness = 50
     var hungriness = 0
@@ -68,6 +70,12 @@ class Ant private constructor(
             is ReturningAction -> ColorRGBa.HOT_PINK
             else -> ColorRGBa.BLUE
         }
+    }
+
+    fun onReturnToColony() {
+        this.pos = this.colony.pos
+        this.food = 0
+        this.adventuringTrail.clear()
     }
 
     companion object {

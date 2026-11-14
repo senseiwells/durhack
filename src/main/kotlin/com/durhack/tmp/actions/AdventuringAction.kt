@@ -14,6 +14,8 @@ class AdventuringAction(
 
     init {
         this.ant.dir = AntRandom.nextDouble() * 360
+
+        this.addPosToTrail()
     }
 
     override fun act(): Action {
@@ -34,6 +36,7 @@ class AdventuringAction(
         this.ant.dir += actualTurn
 
         this.ant.move(1 - (abs(actualTurn - desiredTurn) / 180))
+        this.addPosToTrail()
 
         val nearest = this.ant.world.getNearestFood(this.ant.pos)
         if (nearest.pos.distanceTo(this.ant.pos) < 10.0) {
@@ -41,6 +44,10 @@ class AdventuringAction(
         }
 
         return this
+    }
+
+    private fun addPosToTrail() {
+        this.ant.adventuringTrail.add(this.ant.pos)
     }
 
     companion object {

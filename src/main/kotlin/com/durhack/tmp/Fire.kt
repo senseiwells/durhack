@@ -7,6 +7,6 @@ class Fire(
     val radius: Double
 ) {
     fun areYouOnFire(pos: Vector2): Boolean {
-        return pos.squaredDistanceTo(this.pos) < this.radius * this.radius
+        return pos.closerThan(this.pos, this.radius)
     }
 }

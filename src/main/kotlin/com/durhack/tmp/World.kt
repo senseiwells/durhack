@@ -30,7 +30,7 @@ class World {
     fun createRandomFood(foodPerColony: Int = 1) {
         for (colony in this.colonies) {
             repeat(foodPerColony) {
-                this.createFood(colony.pos + Vector2.random(100.0))
+                this.createFood(colony.pos + Vector2.random(200.0))
             }
         }
     }
@@ -65,9 +65,9 @@ class World {
         this.ants.forEach(Ant::tick)
         this.ants.removeIf(Ant::dead)
 
-        val numFoodBefore = this.food.size
         this.food.removeIf(Food::isDepleted)
-        while (this.food.size < numFoodBefore)
-            this.createRandomFood()
+        if (this.food.isEmpty()) {
+            this.createRandomFood(30)
+        }
     }
 }

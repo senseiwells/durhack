@@ -1,5 +1,6 @@
 package com.durhack.tmp
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.openrndr.Program
 import org.openrndr.math.IntVector2
 import org.openrndr.math.Vector2
@@ -10,6 +11,8 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 
 val AntRandom = Random(1)
+
+val AntLogger = KotlinLogging.logger("AntLogger")
 
 val Program.centre: Vector2
     get() = Vector2(width / 2.0, height / 2.0)
@@ -24,6 +27,10 @@ fun Vector2.Companion.random(scale: Double): Vector2 {
 fun Vector2.angleTowards(other: Vector2): Double {
     val d = other - this
     return atan2(d.y, d.x)
+}
+
+fun Vector2.closerThan(other: Vector2, distance: Double): Boolean {
+    return this.squaredDistanceTo(other) < distance * distance
 }
 
 fun Vector2(x: Int, y: Int): Vector2

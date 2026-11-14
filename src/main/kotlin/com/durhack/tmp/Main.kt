@@ -16,6 +16,7 @@ import org.openrndr.launch
 import org.openrndr.math.Vector2
 import org.openrndr.math.clamp
 import kotlin.math.pow
+import kotlin.random.Random
 import kotlin.system.measureNanoTime
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.nanoseconds
@@ -57,8 +58,8 @@ fun main() = application {
                 val tickTime = measureNanoTime {
                     tickWorld(world)
                 }.nanoseconds
-                if (tickTime < 50.milliseconds) {
-                    delay(50.milliseconds - tickTime)
+                if (tickTime < 2.milliseconds) {
+                    delay(2.milliseconds - tickTime)
                 } else {
                     delay(1.milliseconds)
                 }
@@ -79,11 +80,13 @@ fun main() = application {
 fun Program.createWorld(): World {
     val world = World()
     val colony = world.createColony(centre)
-    repeat(100) {
+    repeat(500) {
         world.createAnt(colony)
     }
 
-    world.createRandomFood(10)
+    // world.createFood(Vector2(224.209016528746, 394.44923405312926))
+
+    world.createRandomFood(30)
 
     // world.createObstaclesBetweenColoniesAndFood()
     return world
@@ -138,11 +141,12 @@ fun Program.renderDebug(buf: ColorBuffer, map: PheromoneMap)
     drawer.strokeWeight = 1.0
     drawer.fill = ColorRGBa.TRANSPARENT
     drawer.rectangle(cacheBounds)
-    drawer.stroke = ColorRGBa.TRANSPARENT
 
     // Draw trail
     // drawer.strokeWeight = 0.1
     // for (trail in map.trails)
-    //     for ((p0, p1) in trail.zipWithNext())
+    //     for ((p0, p1) in trail.asSequence().filterIndexed { i, _ -> i % 10 == 0 }.zipWithNext())
     //         drawer.lineSegment(p0.pos, p1.pos)
+
+    drawer.stroke = ColorRGBa.TRANSPARENT
 }
