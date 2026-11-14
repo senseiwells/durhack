@@ -2,13 +2,15 @@ package com.durhack.tmp.actions
 
 import com.durhack.tmp.Ant
 import com.durhack.tmp.Food
+import kotlin.math.floor
 
 class GatheringAction(
     override val ant: Ant,
     val food: Food
 ): Action {
     override fun act(): Action {
-        if (this.food.isDepleted) {
+        val carryLimit = floor(this.ant.traits.muscularity * 20).toInt()
+        if (this.food.isDepleted || this.ant.food >= carryLimit) {
             return ReturningAction(this.ant)
         }
 

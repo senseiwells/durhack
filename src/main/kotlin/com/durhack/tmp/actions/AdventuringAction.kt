@@ -10,16 +10,17 @@ import kotlin.math.abs
 class AdventuringAction(
     override val ant: Ant
 ): Action {
-    private var trailId: Int
+    private var ticks = 0
 
     init {
         this.ant.dir = AntRandom.nextDouble() * 360
-
-        trailId = ant.colony.pheromone.createTrail()
-        ant.colony.pheromone.makePointSmell(trailId, ant.pos)
     }
 
     override fun act(): Action {
+        if (this.ticks++ > 1_000) {
+            return ReturningAction(this.ant)
+        }
+
         val smellyWeights = DoubleArray(SAMPLE_POINTS) { i ->
             val probe = this.ant.pos + Polar(360.0 / SAMPLE_POINTS * i, this.ant.traits.speed).cartesian
             this.ant.colony.pheromone.howSmelly(probe)
@@ -33,9 +34,6 @@ class AdventuringAction(
         this.ant.dir += actualTurn
 
         this.ant.move(1 - (abs(actualTurn - desiredTurn) / 180))
-        if (this.ant.id == 0) {
-            ant.colony.pheromone.makePointSmell(trailId, ant.pos)
-        }
 
         val nearest = this.ant.world.getNearestFood(this.ant.pos)
         if (nearest.pos.distanceTo(this.ant.pos) < 10.0) {

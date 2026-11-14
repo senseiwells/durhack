@@ -9,7 +9,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-val AntRandom = Random(0)
+val AntRandom = Random(1)
 
 val Program.centre: Vector2
     get() = Vector2(width / 2.0, height / 2.0)

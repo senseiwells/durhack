@@ -1,12 +1,16 @@
 package com.durhack.tmp.actions
 
 import com.durhack.tmp.Ant
+import com.durhack.tmp.AntRandom
 
 class RestingAction(
     override val ant: Ant
 ): Action {
     override fun act(): Action {
-        this.ant.tiredness -= 1
+        if (AntRandom.nextDouble() < 0.3) {
+            this.ant.tiredness -= 1
+        }
+
         if (this.ant.hungriness > 30 && this.ant.tiredness < 20) {
             return AdventuringAction(this.ant)
         }

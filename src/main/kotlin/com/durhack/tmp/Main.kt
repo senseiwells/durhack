@@ -76,11 +76,11 @@ fun main() = application {
 fun Program.createWorld(): World {
     val world = World()
     val colony = world.createColony(centre)
-    repeat(5) {
+    repeat(100) {
         world.createAnt(colony)
     }
 
-    world.createRandomFood()
+    world.createRandomFood(10)
 
     // world.createObstaclesBetweenColoniesAndFood()
     return world

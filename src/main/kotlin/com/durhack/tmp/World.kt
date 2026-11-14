@@ -30,7 +30,7 @@ class World {
     fun createRandomFood(foodPerColony: Int = 1) {
         for (colony in this.colonies) {
             repeat(foodPerColony) {
-                this.createFood(colony.pos + Vector2.random(1000.0))
+                this.createFood(colony.pos + Vector2.random(100.0))
             }
         }
     }
@@ -55,7 +55,6 @@ class World {
 
     fun tick() {
         ticks++
-        println("Starting iteration: ${ticks}")
 
         for (colony in this.colonies)
         {
