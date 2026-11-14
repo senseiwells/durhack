@@ -1,6 +1,8 @@
 package com.durhack.tmp
 
 import org.openrndr.math.Vector2
+import org.openrndr.shape.Rectangle
+import org.openrndr.shape.bounds
 import kotlin.math.exp
 
 data class TrailPoint(
@@ -10,9 +12,12 @@ data class TrailPoint(
 
 typealias Trail = MutableList<TrailPoint>
 
+private const val CACHE_WIDTH = 500
+private const val CACHE_HEIGHT = 500
 class PheromoneMap {
     var nextTrailId = 0
-    var trails: MutableMap<Int, Trail> = mutableMapOf()
+    var trails = mutableMapOf<Int, Trail> ()
+    var cache = DoubleArray(CACHE_WIDTH * CACHE_HEIGHT)
 
     fun createTrail(): Int
     {
@@ -45,21 +50,25 @@ class PheromoneMap {
 
     fun evaporate()
     {
+        var numPoints = 0
+        for (trail in trails.values)
+            numPoints += trail.size
+
+        println("Num points: ${numPoints}")
+
         for (trail in trails.values)
             for (p in trail)
-                p.strength *= 0.9
+                p.strength *= 0.99
     }
 
-    fun distToLine(start: Vector2, end: Vector2, target: Vector2): Double {
-        val line = end - start
-        val lenSq = line.squaredLength
-        if (lenSq == 0.0) return (target - start).length
+    fun makeCache()
+    {
 
-        val factor = (target - start).dot(line) / lenSq
-        if (factor < 0) return (target - start).length
-        if (factor > 1) return (target - end).length
+    }
 
-        val closest = start + line * factor
-        return (target - closest).length
+    fun getBounding(): Rectangle
+    {
+        val x = mutableListOf<Vector2>()
+        x.bounds
     }
 }
