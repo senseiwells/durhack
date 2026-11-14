@@ -102,6 +102,7 @@ fun Program.renderWorld(world: World) {
 
 fun Program.renderDebug(buf: ColorBuffer, map: PheromoneMap)
 {
+    /*
     // === Parameters ===
     val corner = Vector2(300.0, 200.0)
     val width = 200.0
@@ -124,4 +125,14 @@ fun Program.renderDebug(buf: ColorBuffer, map: PheromoneMap)
 
     buf.shadow.upload()
     drawer.image(buf, corner, width, height)
+    */
+
+    /*
+    map.makeCache()
+    val cacheBounds = map.cacheBounds
+    drawer.stroke = ColorRGBa.RED
+    drawer.strokeWeight = 1.0
+    drawer.fill = ColorRGBa.TRANSPARENT
+    drawer.rectangle(cacheBounds)
+    */
 }

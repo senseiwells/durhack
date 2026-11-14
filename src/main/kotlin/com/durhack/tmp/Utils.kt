@@ -1,8 +1,12 @@
 package com.durhack.tmp
 
 import org.openrndr.Program
+import org.openrndr.math.IntVector2
 import org.openrndr.math.Vector2
+import org.openrndr.shape.IntRectangle
 import kotlin.math.atan2
+import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 val Program.centre: Vector2
@@ -18,4 +22,35 @@ fun Vector2.Companion.random(scale: Double): Vector2 {
 fun Vector2.angleTowards(other: Vector2): Double {
     val d = other - this
     return atan2(d.y, d.x)
+}
+
+fun Vector2(x: Int, y: Int): Vector2
+{
+    return Vector2(x.toDouble(), y.toDouble())
+}
+
+fun Vector2(p: IntVector2): Vector2
+{
+    return Vector2(p.x, p.y)
+}
+
+fun nearestIntPoint(p: Vector2): IntVector2
+{
+    return IntVector2(p.x.roundToInt(), p.y.roundToInt())
+}
+
+fun min(p0: IntVector2, p1: IntVector2): IntVector2
+{
+    return IntVector2(
+        min(p0.x, p1.x),
+        min(p0.y, p1.y)
+    )
+}
+
+fun IntRectangle.offsetEdges(xOffset: Int, yOffset: Int): IntRectangle
+{
+    var corner = this.corner - IntVector2(xOffset, yOffset)
+    var width = this.width + xOffset * 2
+    var height = this.height + yOffset * 2
+    return IntRectangle(corner, width, height)
 }
