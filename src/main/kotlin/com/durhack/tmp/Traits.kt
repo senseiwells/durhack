@@ -12,7 +12,7 @@ data class Traits(
         fun random(): Traits {
             return Traits(
                 Random.nextDouble(),
-                Random.nextDouble(),
+                Random.nextDouble(0.5, 1.2),
                 Random.nextDouble(),
                 Random.nextDouble()
             )

@@ -5,11 +5,11 @@ import org.openrndr.Program
 import org.openrndr.application
 import org.openrndr.color.ColorRGBa
 import org.openrndr.extra.color.colormatrix.tint
+import org.openrndr.extra.color.presets.DARK_ORANGE
 import org.openrndr.extra.color.presets.SADDLE_BROWN
 import org.openrndr.launch
 import org.openrndr.math.Vector2
 import org.openrndr.math.clamp
-import kotlin.random.Random
 import kotlin.system.measureNanoTime
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.nanoseconds
@@ -21,14 +21,20 @@ fun main() = application {
     }
 
     program {
-        val world = World()
-
-        initializeWorld(world)
+        var world = createWorld()
 
         var offset = Vector2.ZERO
         var zoom = 1.0
         mouse.dragged.listen { event -> offset += event.dragDisplacement }
-        mouse.scrolled.listen { event -> zoom = clamp(zoom + event.rotation.y, 0.2, 10.0) }
+        mouse.scrolled.listen { event ->
+            zoom = clamp(zoom + event.rotation.y, 0.2, 10.0)
+        }
+
+        keyboard.keyDown.listen { event ->
+            if (event.name == "r") {
+                world = createWorld()
+            }
+        }
 
         launch {
             while (true) {
@@ -53,15 +59,17 @@ fun main() = application {
 }
 
 
-fun Program.initializeWorld(world: World) {
+fun Program.createWorld(): World {
+    val world = World()
     val colony = world.createColony(centre)
     repeat(5) {
         world.createAnt(colony)
     }
 
-    repeat(5) {
-        world.createRandomFood()
-    }
+    world.createRandomFood()
+
+    world.createObstaclesBetweenColoniesAndFood()
+    return world
 }
 
 fun tickWorld(world: World) {
@@ -79,6 +87,11 @@ fun Program.renderWorld(world: World) {
     drawer.fill = ColorRGBa.SADDLE_BROWN
     for (food in world.food) {
         drawer.circle(food.pos, 7.0)
+    }
+
+    drawer.fill = ColorRGBa.DARK_ORANGE
+    for (obstacle in world.obstacles) {
+        drawer.circle(obstacle.pos, obstacle.radius)
     }
 
     for (ant in world.ants) {

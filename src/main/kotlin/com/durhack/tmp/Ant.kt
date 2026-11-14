@@ -24,12 +24,22 @@ class Ant private constructor(
 
     var food = 0
 
+    var dead = false
+        private set
+
     var currentAction: Action = RestingAction(this)
 
     val shouldRender: Boolean
         get() = this.currentAction !is RestingAction
 
     fun tick() {
+        if (this.dead) {
+            return
+        }
+        if (this.world.checkIfImOnFire(this.pos)) {
+            this.die()
+        }
+
         if (Random.nextDouble() < 0.2) {
             this.hungriness = max(100, this.hungriness + 1)
         }
@@ -48,7 +58,7 @@ class Ant private constructor(
     }
 
     fun die() {
-
+        this.dead = true
     }
 
     fun color(): ColorRGBa {
