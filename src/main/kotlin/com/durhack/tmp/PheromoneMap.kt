@@ -20,7 +20,7 @@ typealias Trail = MutableList<TrailPoint>
 
 private const val CACHE_WIDTH = 500
 private const val CACHE_HEIGHT = 500
-private const val RADIUS = 30.0
+private const val RADIUS = 5.0
 
 class PheromoneMap {
     var nextTrailId = 0
@@ -42,32 +42,17 @@ class PheromoneMap {
 
     fun howSmelly(pos: Vector2): Double
     {
-        var smell = 0.0
-
-        for (trail in trails.values)
-        {
-            for ((p0, p1) in trail.zipWithNext())
-            {
-                val strength = (p0.strength + p1.strength) / 2.0
-                val dist = distToLine(p0.pos, p1.pos, pos)
-                smell += strength / exp(dist)
-            }
-        }
-
-        return smell
+        val cPos = worldPointToCache(pos)
+        if (cPos.x !in 0..<CACHE_WIDTH) return 0.0
+        if (cPos.y !in 0..<CACHE_HEIGHT) return 0.0
+        return cache[cPos.y * CACHE_WIDTH + cPos.x]
     }
 
     fun evaporate()
     {
-        var numPoints = 0
-        for (trail in trails.values)
-            numPoints += trail.size
-
-        println("Num points: ${numPoints}")
-
         for (trail in trails.values)
             for (p in trail)
-                p.strength *= 0.99
+                p.strength *= 0.95
     }
 
     fun makeCache()
@@ -109,8 +94,8 @@ class PheromoneMap {
         val spacing = cacheBounds.dimensions / Vector2(CACHE_WIDTH - 1, CACHE_HEIGHT - 1)
         val cRadius = Vector2(RADIUS) / spacing
 
-        val cLineBounds = IntRectangle(min(cp0, cp1), abs(cp1.x - cp0.x), abs(cp1.y - cp0.y))
-        cLineBounds.offsetEdges(ceil(cRadius.x).toInt(), ceil(cRadius.y).toInt())
+        var cLineBounds = IntRectangle(min(cp0, cp1), abs(cp1.x - cp0.x), abs(cp1.y - cp0.y))
+        cLineBounds = cLineBounds.offsetEdges(ceil(cRadius.x).toInt(), ceil(cRadius.y).toInt())
 
         for (dy in 0..<cLineBounds.height)
         {
@@ -121,7 +106,7 @@ class PheromoneMap {
 
                 val worldPos = cachePointToWorld(IntVector2(cx, cy))
                 val dist = distToLine(p0.pos, p1.pos, worldPos)
-                val smell = strength / exp(dist)
+                val smell = strength / exp(dist * 2.0)
                 cache[cy * CACHE_WIDTH + cx] += smell
             }
         }
