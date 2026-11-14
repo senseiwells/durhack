@@ -4,11 +4,17 @@ import kotlinx.coroutines.delay
 import org.openrndr.Program
 import org.openrndr.application
 import org.openrndr.color.ColorRGBa
+import org.openrndr.draw.ColorBuffer
+import org.openrndr.draw.ColorBufferShadow
+import org.openrndr.draw.MagnifyingFilter
+import org.openrndr.draw.MinifyingFilter
+import org.openrndr.draw.colorBuffer
 import org.openrndr.extra.color.colormatrix.tint
 import org.openrndr.extra.color.presets.SADDLE_BROWN
 import org.openrndr.launch
 import org.openrndr.math.Vector2
 import org.openrndr.math.clamp
+import org.openrndr.shape.Rectangle
 import kotlin.random.Random
 import kotlin.system.measureNanoTime
 import kotlin.time.Duration.Companion.milliseconds
@@ -30,6 +36,10 @@ fun main() = application {
         mouse.dragged.listen { event -> offset += event.dragDisplacement }
         mouse.scrolled.listen { event -> zoom = clamp(zoom + event.rotation.y, 0.2, 10.0) }
 
+        // Create pheromone texture
+        val pheromoneBuf = colorBuffer(20, 20)
+        pheromoneBuf.filter(MinifyingFilter.NEAREST, MagnifyingFilter.NEAREST)
+
         launch {
             while (true) {
                 val tickTime = measureNanoTime {
@@ -47,6 +57,7 @@ fun main() = application {
             drawer.scale(zoom)
             drawer.translate(-centre)
 
+            renderDebug(pheromoneBuf, world.colonies[0].pheromone)
             renderWorld(world)
         }
     }
@@ -87,4 +98,30 @@ fun Program.renderWorld(world: World) {
             drawer.circle(ant.pos, 5.0)
         }
     }
+}
+
+fun Program.renderDebug(buf: ColorBuffer, map: PheromoneMap)
+{
+    // === Parameters ===
+    val corner = Vector2(300.0, 200.0)
+    val width = 200.0
+    val height = 200.0
+    // ==================
+
+    for (y in 0..<buf.height)
+    {
+        for (x in 0..<buf.width)
+        {
+            var pos = Vector2(x.toDouble() / buf.width, y.toDouble() / buf.height)
+            pos *= Vector2(width, height)
+            pos += corner
+
+            val howSmelly = map.howSmelly(pos)
+
+            buf.shadow[x, y] = ColorRGBa(howSmelly, howSmelly + 0.1, howSmelly)
+        }
+    }
+
+    buf.shadow.upload()
+    drawer.image(buf, corner, width, height)
 }

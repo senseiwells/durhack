@@ -41,5 +41,9 @@ class World {
         if (this.food.isEmpty()) {
             this.createRandomFood()
         }
+        for (colony in this.colonies)
+        {
+            colony.pheromone.evaporate()
+        }
     }
 }
