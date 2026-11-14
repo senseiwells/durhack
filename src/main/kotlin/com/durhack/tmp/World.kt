@@ -24,9 +24,22 @@ class World {
         this.food.add(food)
     }
 
+    fun createRandomFood() {
+        this.createFood(this.colonies.random().pos + Vector2.random(50.0) )
+    }
+
+    fun getNearestFood(pos: Vector2): Food {
+        return this.food.minBy { food -> food.pos.squaredDistanceTo(pos) }
+    }
+
     fun tick() {
         for (ant in this.ants) {
-            ant.act()
+            ant.tick()
+        }
+
+        this.food.removeIf(Food::isDepleted)
+        if (this.food.isEmpty()) {
+            this.createRandomFood()
         }
     }
 }

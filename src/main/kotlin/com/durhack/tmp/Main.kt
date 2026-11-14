@@ -5,9 +5,11 @@ import org.openrndr.Program
 import org.openrndr.application
 import org.openrndr.color.ColorRGBa
 import org.openrndr.extra.color.colormatrix.tint
+import org.openrndr.extra.color.presets.SADDLE_BROWN
 import org.openrndr.launch
 import org.openrndr.math.Vector2
 import org.openrndr.math.clamp
+import kotlin.random.Random
 import kotlin.system.measureNanoTime
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.nanoseconds
@@ -32,16 +34,19 @@ fun main() = application {
             while (true) {
                 val tickTime = measureNanoTime {
                     tickWorld(world)
+                }.nanoseconds
+                if (tickTime < 50.milliseconds) {
+                    delay(50.milliseconds - tickTime)
                 }
-                delay(50.milliseconds - tickTime.nanoseconds)
             }
         }
 
         extend {
             drawer.translate(offset)
-            drawer.translate(Vector2(width / 2.0, height / 2.0))
+            drawer.translate(centre)
             drawer.scale(zoom)
-            drawer.translate(Vector2(-width / 2.0, -height / 2.0))
+            drawer.translate(-centre)
+
             renderWorld(world)
         }
     }
@@ -49,9 +54,13 @@ fun main() = application {
 
 
 fun Program.initializeWorld(world: World) {
-    val colony = world.createColony(Vector2(width / 2.0, height / 2.0))
+    val colony = world.createColony(centre)
     repeat(5) {
         world.createAnt(colony)
+    }
+
+    repeat(5) {
+        world.createRandomFood()
     }
 }
 
@@ -67,10 +76,14 @@ fun Program.renderWorld(world: World) {
         drawer.circle(colony.pos, 10.0)
     }
 
+    drawer.fill = ColorRGBa.SADDLE_BROWN
+    for (food in world.food) {
+        drawer.circle(food.pos, 7.0)
+    }
 
-    drawer.fill = ColorRGBa.BLUE
     for (ant in world.ants) {
         if (ant.shouldRender) {
+            drawer.fill = ant.color()
             drawer.circle(ant.pos, 5.0)
         }
     }

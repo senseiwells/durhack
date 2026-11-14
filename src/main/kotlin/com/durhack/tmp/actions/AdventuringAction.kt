@@ -1,16 +1,22 @@
 package com.durhack.tmp.actions
 
 import com.durhack.tmp.Ant
-import org.openrndr.math.Polar
 import kotlin.random.Random
 
 class AdventuringAction(
     override val ant: Ant
 ): Action {
-    val dir = Random.nextDouble() * 360
+    init {
+        this.ant.dir = Random.nextDouble() * 360
+    }
 
     override fun act(): Action {
-        this.ant.pos += Polar(this.dir, this.ant.traits.speed).cartesian
+        this.ant.move()
+
+        val nearest = this.ant.world.getNearestFood(this.ant.pos)
+        if (nearest.pos.distanceTo(this.ant.pos) < 10.0) {
+            return GatheringAction(this.ant, nearest)
+        }
         return this
     }
 }
