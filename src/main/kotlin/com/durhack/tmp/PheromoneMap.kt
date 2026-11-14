@@ -26,7 +26,7 @@ class PheromoneMap {
     var nextTrailId = 0
     var trails = mutableMapOf<Int, Trail> ()
     var cache = DoubleArray(CACHE_WIDTH * CACHE_HEIGHT)
-    var cacheBounds = Rectangle(Vector2(0.0, 0.0), 0.0, 0.0)
+    var cacheBounds = Rectangle(Vector2(0.0, 0.0), 1.0, 1.0)
 
     fun createTrail(): Int
     {
@@ -60,6 +60,7 @@ class PheromoneMap {
         cache.fill(0.0)
 
         cacheBounds = getBounds()
+        if (cacheBounds.corner.x.isInfinite()) cacheBounds = Rectangle(Vector2(0.0, 0.0), 1.0, 1.0)
         cacheBounds = cacheBounds.offsetEdges(RADIUS * 2)
 
         for (trail in trails.values)
