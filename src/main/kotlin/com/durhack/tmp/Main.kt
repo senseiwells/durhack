@@ -44,7 +44,7 @@ fun main() = application {
         }
 
         // Create pheromone texture
-        val pheromoneBuf = colorBuffer(20, 20)
+        val pheromoneBuf = colorBuffer(500, 500)
         pheromoneBuf.filter(MinifyingFilter.NEAREST, MagnifyingFilter.NEAREST)
 
         launch {
@@ -116,37 +116,24 @@ fun Program.renderWorld(world: World) {
 
 fun Program.renderDebug(buf: ColorBuffer, map: PheromoneMap)
 {
-    /*
-    // === Parameters ===
-    val corner = Vector2(300.0, 200.0)
-    val width = 200.0
-    val height = 200.0
-    // ==================
+    map.makeCache()
 
     for (y in 0..<buf.height)
     {
         for (x in 0..<buf.width)
         {
-            var pos = Vector2(x.toDouble() / buf.width, y.toDouble() / buf.height)
-            pos *= Vector2(width, height)
-            pos += corner
-
-            val howSmelly = map.howSmelly(pos)
-
-            buf.shadow[x, y] = ColorRGBa(howSmelly, howSmelly + 0.1, howSmelly)
+            val howSmelly = map.cache[y * 500 + x]
+            buf.shadow[x, y] = ColorRGBa(howSmelly, howSmelly, howSmelly)
         }
     }
-
     buf.shadow.upload()
-    drawer.image(buf, corner, width, height)
-    */
-
-    /*
-    map.makeCache()
     val cacheBounds = map.cacheBounds
+    drawer.image(buf, cacheBounds)
+
+    // Draw cache outline
     drawer.stroke = ColorRGBa.RED
     drawer.strokeWeight = 1.0
     drawer.fill = ColorRGBa.TRANSPARENT
     drawer.rectangle(cacheBounds)
-    */
+    drawer.strokeWeight = 0.0
 }
