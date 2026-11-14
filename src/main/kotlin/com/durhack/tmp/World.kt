@@ -65,9 +65,9 @@ class World {
         this.ants.forEach(Ant::tick)
         this.ants.removeIf(Ant::dead)
 
+        val numFoodBefore = this.food.size
         this.food.removeIf(Food::isDepleted)
-        if (this.food.isEmpty()) {
+        while (this.food.size < numFoodBefore)
             this.createRandomFood()
-        }
     }
 }
