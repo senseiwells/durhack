@@ -9,13 +9,15 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
+val AntRandom = Random(0)
+
 val Program.centre: Vector2
     get() = Vector2(width / 2.0, height / 2.0)
 
 fun Vector2.Companion.random(scale: Double): Vector2 {
     return Vector2(
-        Random.nextDouble(-1.0, 1.0) * scale,
-        Random.nextDouble(-1.0, 1.0) * scale
+        AntRandom.nextDouble(-1.0, 1.0) * scale,
+        AntRandom.nextDouble(-1.0, 1.0) * scale
     )
 }
 
@@ -53,4 +55,33 @@ fun IntRectangle.offsetEdges(xOffset: Int, yOffset: Int): IntRectangle
     var width = this.width + xOffset * 2
     var height = this.height + yOffset * 2
     return IntRectangle(corner, width, height)
+}
+
+fun DoubleArray.weightedIndex(random: Random = AntRandom): Int {
+    val sum = sum()
+    if (sum == 0.0) {
+        return random.nextInt(this.size)
+    }
+
+    var r = random.nextDouble() * sum
+    for (i in indices) {
+        r -= this[i]
+        if (r < 0) return i
+    }
+    return indexOfLast { it > 0.0 }
+}
+
+fun degreesBetween(p0: Double, p1: Double): Double {
+    return wrapDegrees(p1 - p0)
+}
+
+fun wrapDegrees(angle: Double): Double {
+    var normalizedAngle = angle % 360.0
+    if (normalizedAngle >= 180.0) {
+        normalizedAngle -= 360.0
+    } else if (normalizedAngle < -180.0) {
+        normalizedAngle += 360.0
+    }
+
+    return normalizedAngle
 }

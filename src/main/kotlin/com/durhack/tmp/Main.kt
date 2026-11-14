@@ -15,8 +15,7 @@ import org.openrndr.extra.color.presets.SADDLE_BROWN
 import org.openrndr.launch
 import org.openrndr.math.Vector2
 import org.openrndr.math.clamp
-import org.openrndr.shape.Rectangle
-import kotlin.random.Random
+import kotlin.math.pow
 import kotlin.system.measureNanoTime
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.nanoseconds
@@ -34,7 +33,10 @@ fun main() = application {
         var zoom = 1.0
         mouse.dragged.listen { event -> offset += event.dragDisplacement }
         mouse.scrolled.listen { event ->
-            zoom = clamp(zoom + event.rotation.y, 0.2, 10.0)
+            val newZoom = clamp(zoom * 1.1.pow(event.rotation.y), 0.2, 10.0)
+            val m = event.position
+            offset = m - (m - offset) * (newZoom / zoom)
+            zoom = newZoom
         }
 
         keyboard.keyDown.listen { event ->
@@ -54,15 +56,15 @@ fun main() = application {
                 }.nanoseconds
                 if (tickTime < 50.milliseconds) {
                     delay(50.milliseconds - tickTime)
+                } else {
+                    delay(1.milliseconds)
                 }
             }
         }
 
         extend {
             drawer.translate(offset)
-            drawer.translate(centre)
             drawer.scale(zoom)
-            drawer.translate(-centre)
 
             renderDebug(pheromoneBuf, world.colonies[0].pheromone)
             renderWorld(world)
@@ -80,7 +82,7 @@ fun Program.createWorld(): World {
 
     world.createRandomFood()
 
-    world.createObstaclesBetweenColoniesAndFood()
+    // world.createObstaclesBetweenColoniesAndFood()
     return world
 }
 
@@ -93,12 +95,12 @@ fun Program.renderWorld(world: World) {
 
     drawer.fill = ColorRGBa.PINK
     for (colony in world.colonies) {
-        drawer.circle(colony.pos, 10.0)
+        drawer.circle(colony.pos, 4.0)
     }
 
     drawer.fill = ColorRGBa.SADDLE_BROWN
     for (food in world.food) {
-        drawer.circle(food.pos, 7.0)
+        drawer.circle(food.pos, 3.0)
     }
 
     drawer.fill = ColorRGBa.DARK_ORANGE
@@ -109,15 +111,13 @@ fun Program.renderWorld(world: World) {
     for (ant in world.ants) {
         if (ant.shouldRender) {
             drawer.fill = ant.color()
-            drawer.circle(ant.pos, 5.0)
+            drawer.circle(ant.pos, 2.0)
         }
     }
 }
 
 fun Program.renderDebug(buf: ColorBuffer, map: PheromoneMap)
 {
-    map.makeCache()
-
     for (y in 0..<buf.height)
     {
         for (x in 0..<buf.width)

@@ -9,7 +9,6 @@ import org.openrndr.extra.color.presets.HOT_PINK
 import org.openrndr.math.Polar
 import org.openrndr.math.Vector2
 import kotlin.math.max
-import kotlin.random.Random
 
 class Ant private constructor(
     val world: World,
@@ -18,6 +17,8 @@ class Ant private constructor(
     var pos: Vector2,
     var dir: Double
 ) {
+    val id = ID_COUNTER++
+
     var happiness = 70
     var tiredness = 50
     var hungriness = 0
@@ -40,7 +41,7 @@ class Ant private constructor(
             this.die()
         }
 
-        if (Random.nextDouble() < 0.2) {
+        if (AntRandom.nextDouble() < 0.2) {
             this.hungriness = max(100, this.hungriness + 1)
         }
         if (this.hungriness <= 0) {
@@ -53,8 +54,8 @@ class Ant private constructor(
         this.currentAction = this.currentAction.act()
     }
 
-    fun move() {
-        this.pos += Polar(this.dir, this.traits.speed).cartesian
+    fun move(scale: Double = 1.0) {
+        this.pos += Polar(this.dir, this.traits.speed * scale).cartesian
     }
 
     fun die() {
@@ -70,6 +71,8 @@ class Ant private constructor(
     }
 
     companion object {
+        private var ID_COUNTER = 0
+
         fun create(world: World, colony: Colony, traits: Traits = Traits.random()): Ant {
             return Ant(world, colony, traits, colony.pos, 0.0)
         }

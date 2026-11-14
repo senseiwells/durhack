@@ -4,7 +4,6 @@ import org.openrndr.math.IntVector2
 import org.openrndr.math.Vector2
 import org.openrndr.shape.IntRectangle
 import org.openrndr.shape.Rectangle
-import org.openrndr.shape.bounds
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.exp
@@ -59,8 +58,11 @@ class PheromoneMap {
     {
         cache.fill(0.0)
 
+        if (this.trails.values.sumOf { it.size } <= 0) {
+            return
+        }
+
         cacheBounds = getBounds()
-        if (cacheBounds.corner.x.isInfinite()) cacheBounds = Rectangle(Vector2(0.0, 0.0), 1.0, 1.0)
         cacheBounds = cacheBounds.offsetEdges(RADIUS * 2)
 
         for (trail in trails.values)

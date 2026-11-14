@@ -1,7 +1,5 @@
 package com.durhack.tmp
 
-import kotlin.random.Random
-
 data class Traits(
     val sheepishness: Double,
     val speed: Double,
@@ -11,10 +9,10 @@ data class Traits(
     companion object {
         fun random(): Traits {
             return Traits(
-                Random.nextDouble(),
-                Random.nextDouble(0.5, 1.2),
-                Random.nextDouble(),
-                Random.nextDouble()
+                AntRandom.nextDouble(),
+                AntRandom.nextDouble(0.5, 1.2) * 3,
+                AntRandom.nextDouble(),
+                AntRandom.nextDouble()
             )
         }
     }

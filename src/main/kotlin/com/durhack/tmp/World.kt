@@ -1,13 +1,14 @@
 package com.durhack.tmp
 
 import org.openrndr.math.Vector2
-import kotlin.random.Random
 
 class World {
     val colonies = mutableListOf<Colony>()
     val ants = mutableListOf<Ant>()
     val food = mutableListOf<Food>()
     val obstacles = mutableListOf<Fire>()
+
+    var ticks = 0
 
     fun createColony(pos: Vector2): Colony {
         val colony = Colony(pos)
@@ -29,7 +30,7 @@ class World {
     fun createRandomFood(foodPerColony: Int = 1) {
         for (colony in this.colonies) {
             repeat(foodPerColony) {
-                this.createFood(colony.pos + Vector2.random(50.0))
+                this.createFood(colony.pos + Vector2.random(1000.0))
             }
         }
     }
@@ -38,7 +39,7 @@ class World {
         for (colony in this.colonies) {
             for (food in this.food) {
                 val direction = food.pos - colony.pos
-                val fire = Fire(colony.pos + direction / 2.0, Random.nextDouble(5.0, 12.0))
+                val fire = Fire(colony.pos + direction / 2.0, AntRandom.nextDouble(5.0, 12.0))
                 this.obstacles.add(fire)
             }
         }
@@ -53,16 +54,21 @@ class World {
     }
 
     fun tick() {
+        ticks++
+        println("Starting iteration: ${ticks}")
+
+        for (colony in this.colonies)
+        {
+            colony.pheromone.evaporate()
+            colony.pheromone.makeCache()
+        }
+
         this.ants.forEach(Ant::tick)
         this.ants.removeIf(Ant::dead)
 
         this.food.removeIf(Food::isDepleted)
         if (this.food.isEmpty()) {
             this.createRandomFood()
-        }
-        for (colony in this.colonies)
-        {
-            colony.pheromone.evaporate()
         }
     }
 }

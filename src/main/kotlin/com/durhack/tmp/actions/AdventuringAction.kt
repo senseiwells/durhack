@@ -1,23 +1,41 @@
 package com.durhack.tmp.actions
 
 import com.durhack.tmp.Ant
-import kotlin.random.Random
+import com.durhack.tmp.AntRandom
+import com.durhack.tmp.degreesBetween
+import com.durhack.tmp.weightedIndex
+import org.openrndr.math.Polar
+import kotlin.math.abs
 
 class AdventuringAction(
     override val ant: Ant
 ): Action {
-    var trailId: Int
+    private var trailId: Int
 
     init {
-        this.ant.dir = Random.nextDouble() * 360
+        this.ant.dir = AntRandom.nextDouble() * 360
 
         trailId = ant.colony.pheromone.createTrail()
         ant.colony.pheromone.makePointSmell(trailId, ant.pos)
     }
 
     override fun act(): Action {
-        this.ant.move()
-        ant.colony.pheromone.makePointSmell(trailId, ant.pos)
+        val smellyWeights = DoubleArray(SAMPLE_POINTS) { i ->
+            val probe = this.ant.pos + Polar(360.0 / SAMPLE_POINTS * i, this.ant.traits.speed).cartesian
+            this.ant.colony.pheromone.howSmelly(probe)
+        }
+
+        val index = smellyWeights.weightedIndex()
+
+        val newDir = 360.0 / SAMPLE_POINTS * index
+        val desiredTurn = degreesBetween(this.ant.dir, newDir)
+        val actualTurn = desiredTurn.coerceIn(-CLAMPING_ANGLE, CLAMPING_ANGLE)
+        this.ant.dir += actualTurn
+
+        this.ant.move(1 - (abs(actualTurn - desiredTurn) / 180))
+        if (this.ant.id == 0) {
+            ant.colony.pheromone.makePointSmell(trailId, ant.pos)
+        }
 
         val nearest = this.ant.world.getNearestFood(this.ant.pos)
         if (nearest.pos.distanceTo(this.ant.pos) < 10.0) {
@@ -25,5 +43,10 @@ class AdventuringAction(
         }
 
         return this
+    }
+
+    companion object {
+        const val SAMPLE_POINTS = 12
+        const val CLAMPING_ANGLE = 10.0
     }
 }
