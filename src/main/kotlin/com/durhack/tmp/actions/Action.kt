@@ -5,5 +5,5 @@ import com.durhack.tmp.Ant
 sealed interface Action {
     val ant: Ant
 
-    fun act()
+    fun act(): Action
 }

@@ -40,7 +40,7 @@ fun main() = application {
         launch {
             while (true) {
                 world.tick()
-                delay(1.seconds)
+                delay(50.milliseconds)
             }
         }
 

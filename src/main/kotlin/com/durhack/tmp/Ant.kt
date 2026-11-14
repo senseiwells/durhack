@@ -1,25 +1,30 @@
 package com.durhack.tmp
 
+import com.durhack.tmp.actions.Action
 import com.durhack.tmp.actions.RestingAction
 import org.openrndr.math.Vector2
 
 class Ant private constructor(
     private val colony: Colony,
-    val pos: Vector2,
-    val dir: Double
+    val traits: Traits,
+    var pos: Vector2,
+    var dir: Double
 ) {
-    val currentAction = RestingAction(this)
+    var happiness = 0
+    var tiredness = 50
+
+    var currentAction: Action = RestingAction(this)
 
     val shouldRender: Boolean
         get() = this.currentAction !is RestingAction
 
     fun act() {
-        this.currentAction.act()
+        this.currentAction = this.currentAction.act()
     }
 
     companion object {
-        fun create(colony: Colony): Ant {
-            return Ant(colony, colony.pos, 0.0)
+        fun create(colony: Colony, traits: Traits = Traits.random()): Ant {
+            return Ant(colony, traits, colony.pos, 0.0)
         }
     }
 }

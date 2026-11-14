@@ -5,7 +5,7 @@ import com.durhack.tmp.Ant
 class ReturningAction(
     override val ant: Ant
 ): Action {
-    override fun act() {
-
+    override fun act(): Action {
+        TODO()
     }
 }
