@@ -1,6 +1,10 @@
 package com.durhack.tmp
 
+import com.durhack.tmp.createWorld
 import kotlinx.coroutines.delay
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.encodeToStream
+import org.openrndr.ExtensionStage
 import org.openrndr.Program
 import org.openrndr.application
 import org.openrndr.color.ColorRGBa
@@ -12,13 +16,24 @@ import org.openrndr.extra.color.colormatrix.tint
 import org.openrndr.extra.color.presets.DARK_ORANGE
 import org.openrndr.extra.color.presets.SADDLE_BROWN
 import org.openrndr.extra.gui.GUI
+import org.openrndr.extra.gui.GUIAppearance
 import org.openrndr.launch
 import org.openrndr.math.Vector2
 import org.openrndr.math.clamp
+import java.nio.file.Path
 import kotlin.math.pow
+import kotlin.reflect.KMutableProperty0
+import kotlin.reflect.KProperty0
 import kotlin.system.measureNanoTime
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.nanoseconds
+
+private const val GUI_WIDTH = 300
+
+private var offset = Vector2.ZERO
+private var zoom = 1.0
+
+lateinit var world: World
 
 fun main() = application {
     configure {
@@ -30,30 +45,11 @@ fun main() = application {
     }
 
     program {
-        var world = createWorld()
+        world = createWorld()
 
-        var offset = Vector2.ZERO
-        var zoom = 1.0
-        mouse.dragged.listen { event -> offset += event.dragDisplacement }
-        mouse.scrolled.listen { event ->
-            val newZoom = clamp(zoom * 1.1.pow(event.rotation.y), 0.2, 10.0)
-            val m = event.position
-            offset = m - (m - offset) * (newZoom / zoom)
-            zoom = newZoom
-        }
-
-        keyboard.keyDown.listen { event ->
-            if (event.name == "r") {
-                world = createWorld()
-            }
-        }
-
-        val gui = GUI()
-        gui.compartmentsCollapsedByDefault = false
-
-        gui.add(CoreSettings, "Settings")
-        gui.add(DebugSettings, "Debug")
-        extend(gui)
+        addGui()
+        addListeners()
+        recenterShit()
 
         // Create pheromone texture
         val pheromoneBuf = colorBuffer(500, 500)
@@ -83,6 +79,45 @@ fun main() = application {
     }
 }
 
+fun Program.addGui() {
+    val gui = GUI(GUIAppearance(barWidth = GUI_WIDTH))
+    gui.compartmentsCollapsedByDefault = false
+
+    gui.add(CoreSettings, "Settings")
+    gui.add(DebugSettings, "Debug")
+    extend(gui)
+}
+
+fun Program.addListeners() {
+    mouse.dragged.listen { event ->
+        if (event.position.x > GUI_WIDTH) {
+            offset += event.dragDisplacement
+        }
+    }
+    mouse.scrolled.listen { event ->
+        val newZoom = clamp(zoom * 1.1.pow(event.rotation.y), 0.2, 10.0)
+        val m = event.position
+        offset = m - (m - offset) * (newZoom / zoom)
+        zoom = newZoom
+    }
+
+    keyboard.keyDown.listen { event ->
+        if (event.name == "r") {
+            world = createWorld()
+        }
+    }
+}
+
+fun Program.recenterShit() {
+    var lastWindowSize = window.size
+    extend(ExtensionStage.BEFORE_DRAW) {
+        val size = window.size
+        if (size != lastWindowSize) {
+            offset += (size - lastWindowSize) * 0.5
+            lastWindowSize = size
+        }
+    }
+}
 
 fun Program.createWorld(): World {
     val world = World()
