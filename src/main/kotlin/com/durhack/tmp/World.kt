@@ -1,5 +1,10 @@
 package com.durhack.tmp
 
+import com.durhack.tmp.rendering.AntRenderState
+import com.durhack.tmp.rendering.ColonyRenderState
+import com.durhack.tmp.rendering.FoodRenderState
+import com.durhack.tmp.rendering.ObstacleRenderState
+import com.durhack.tmp.rendering.WorldRenderState
 import org.openrndr.math.Vector2
 
 class World {
@@ -9,6 +14,8 @@ class World {
     val obstacles = mutableListOf<Fire>()
 
     var ticks = 0
+
+    var renderState = WorldRenderState()
 
     fun createColony(pos: Vector2): Colony {
         val colony = Colony(pos)
@@ -55,10 +62,9 @@ class World {
     }
 
     fun tick() {
-        ticks++
+        this.ticks++
 
-        for (colony in this.colonies)
-        {
+        for (colony in this.colonies) {
             colony.pheromone.evaporate()
             colony.pheromone.makeCache()
         }
@@ -70,5 +76,27 @@ class World {
         if (this.food.isEmpty()) {
             this.createRandomFood(30)
         }
+
+        for (colony in this.colonies) {
+            colony.pheromone.publishCache()
+        }
+        this.extractRenderState()
+    }
+
+    private fun extractRenderState() {
+        this.renderState = WorldRenderState(
+            this.ants.map { ant -> AntRenderState(ant.pos, ant.color(), ant.visible) },
+            this.colonies.map { colony ->
+                val trails = colony.pheromone.trails.map { trail ->
+                    trail.asSequence().filterIndexed { i, _ -> i % 10 == 0 }
+                        .map { it.pos }
+                        .zipWithNext()
+                        .toList()
+                }
+                ColonyRenderState(colony.pos, colony.pheromone.cacheBounds, trails, colony.pheromone.cache)
+            },
+            this.food.map { food -> FoodRenderState(food.pos) },
+            this.obstacles.map { obstacle -> ObstacleRenderState(obstacle.pos, obstacle.radius) },
+        )
     }
 }

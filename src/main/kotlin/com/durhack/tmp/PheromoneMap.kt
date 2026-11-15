@@ -1,5 +1,6 @@
 package com.durhack.tmp
 
+import com.durhack.tmp.rendering.TripleBuffer
 import org.openrndr.math.IntVector2
 import org.openrndr.math.Vector2
 import org.openrndr.shape.IntRectangle
@@ -24,7 +25,7 @@ private const val CLEANUP_THRESH = 1e-2
 
 class PheromoneMap {
     var trails = mutableListOf<PheromoneTrail>()
-    var cache = DoubleArray(CACHE_WIDTH * CACHE_HEIGHT)
+    val cache = TripleBuffer(CACHE_WIDTH * CACHE_HEIGHT)
     var cacheBounds = Rectangle(Vector2(0.0, 0.0), 1.0, 1.0)
 
     fun createTrail(): PheromoneTrail
@@ -44,7 +45,7 @@ class PheromoneMap {
         val cPos = worldPointToCache(pos)
         if (cPos.x !in 0..<CACHE_WIDTH) return 0.0
         if (cPos.y !in 0..<CACHE_HEIGHT) return 0.0
-        return cache[cPos.y * CACHE_WIDTH + cPos.x]
+        return cache.writeBuffer[cPos.y * CACHE_WIDTH + cPos.x]
     }
 
     fun evaporate()
@@ -63,9 +64,8 @@ class PheromoneMap {
         trails.removeIf { trail -> trail.isEmpty() }
     }
 
-    fun makeCache()
-    {
-        cache.fill(0.0)
+    fun makeCache() {
+        cache.writeBuffer.fill(0.0)
 
         if (this.trails.sumOf { it.size } <= 0) {
             return
@@ -77,6 +77,10 @@ class PheromoneMap {
         for (trail in trails)
             for ((p0, p1) in trail.zipWithNext())
                 depositSegment(p0, p1)
+    }
+
+    fun publishCache() {
+        cache.publish()
     }
 
     private fun cachePointToWorld(cPoint: IntVector2): Vector2
@@ -119,7 +123,7 @@ class PheromoneMap {
                 val worldPos = cachePointToWorld(IntVector2(cx, cy))
                 val dist = distToLine(p0.pos, p1.pos, worldPos)
                 val smell = strength / exp(dist * 2.0)
-                cache[cy * CACHE_WIDTH + cx] = max(cache[cy * CACHE_WIDTH + cx], smell)
+                cache.writeBuffer[cy * CACHE_WIDTH + cx] = max(cache.writeBuffer[cy * CACHE_WIDTH + cx], smell)
             }
         }
     }

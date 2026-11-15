@@ -32,7 +32,7 @@ class Ant private constructor(
 
     var currentAction: Action = RestingAction(this)
 
-    val shouldRender: Boolean
+    val visible: Boolean
         get() = this.currentAction !is RestingAction
 
     fun tick() {
