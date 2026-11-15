@@ -6,6 +6,7 @@ import com.durhack.tmp.CoreSettings
 import com.durhack.tmp.PheromoneTrail
 import com.durhack.tmp.angleTowards
 import com.durhack.tmp.closerThan
+import com.durhack.tmp.wrapDegrees
 import org.openrndr.math.asDegrees
 import kotlin.math.max
 import kotlin.math.pow
@@ -48,6 +49,7 @@ class ReturningAction(
 
         if (this.ant.pos.distanceTo(this.ant.colony.pos) < 8.0) {
             this.ant.onReturnToColony()
+            this.ant.dir = wrapDegrees(this.ant.dir + 180)
             return RestingAction(this.ant)
         }
         return this

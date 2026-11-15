@@ -13,8 +13,6 @@ class AdventuringAction(
     private var ticks = 0
 
     init {
-        this.ant.dir = AntRandom.nextDouble() * 360
-
         this.addPosToTrail()
     }
 
