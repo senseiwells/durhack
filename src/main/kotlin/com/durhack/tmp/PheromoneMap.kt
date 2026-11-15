@@ -1,5 +1,6 @@
 package com.durhack.tmp
 
+import kotlinx.serialization.Serializable
 import org.openrndr.math.IntVector2
 import org.openrndr.math.Vector2
 import org.openrndr.shape.IntRectangle
@@ -10,6 +11,7 @@ import kotlin.math.exp
 import kotlin.math.max
 import kotlin.math.min
 
+@Serializable
 data class TrailPoint(
     val pos: Vector2,
     var strength: Double
