@@ -5,7 +5,9 @@ import com.durhack.tmp.actions.GatheringAction
 import com.durhack.tmp.actions.RestingAction
 import com.durhack.tmp.actions.ReturningAction
 import org.openrndr.color.ColorRGBa
+import org.openrndr.extra.color.presets.AQUAMARINE
 import org.openrndr.extra.color.presets.HOT_PINK
+import org.openrndr.extra.color.presets.PURPLE
 import org.openrndr.math.Polar
 import org.openrndr.math.Vector2
 import kotlin.math.max
@@ -67,8 +69,8 @@ class Ant private constructor(
     fun color(): ColorRGBa {
         return when (this.currentAction) {
             is GatheringAction -> ColorRGBa.GREEN
-            is ReturningAction -> ColorRGBa.HOT_PINK
-            else -> ColorRGBa.BLUE
+            is ReturningAction -> if (this.colony.id == 0) ColorRGBa.HOT_PINK else ColorRGBa.PURPLE
+            else -> if (this.colony.id == 0) ColorRGBa.BLUE else ColorRGBa.AQUAMARINE
         }
     }
 

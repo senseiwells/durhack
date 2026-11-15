@@ -135,6 +135,11 @@ fun Program.createWorld(): World {
         world.createAnt(colony)
     }
 
+    val colony2 = world.createColony(centre + Vector2(300.0, 0.0))
+    repeat(CoreSettings.ants) {
+        world.createAnt(colony2)
+    }
+
     world.createRandomFood(CoreSettings.food)
 
     // world.createObstaclesBetweenColoniesAndFood()

@@ -107,7 +107,7 @@ class World {
                         .zipWithNext()
                         .toList()
                 }
-                ColonyRenderState(colony.pos, colony.pheromone.cacheBounds, trails, colony.pheromone.cache)
+                ColonyRenderState(colony.pos, trails, colony.pheromone.cache)
             },
             this.food.map { food -> FoodRenderState(food.pos) },
             this.obstacles.map { obstacle -> ObstacleRenderState(obstacle.pos, obstacle.radius) },

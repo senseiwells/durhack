@@ -42,23 +42,23 @@ fun Program.renderDebug(buf: ColorBuffer, state: WorldRenderState) {
 }
 
 fun Program.renderColonyDebug(buf: ColorBuffer, state: ColonyRenderState) {
-    val cache = state.buffer.latest()
+    val (cache, bounds) = state.buffer.latest()
     for (y in 0..<buf.height) {
         for (x in 0..<buf.width) {
             val howSmelly = cache[y * CACHE_WIDTH + x].strength
-            buf.shadow[x, y] = ColorRGBa(howSmelly, howSmelly, howSmelly)
+            buf.shadow[x, y] = if (howSmelly <= 0.0) ColorRGBa.TRANSPARENT else ColorRGBa(howSmelly, howSmelly, howSmelly)
         }
     }
     buf.shadow.upload()
 
-    drawer.image(buf, state.bounds)
+    drawer.image(buf, bounds)
 
     // Draw cache outline
     if (DebugSettings.cache) {
         drawer.stroke = ColorRGBa.RED
         drawer.strokeWeight = 1.0
         drawer.fill = ColorRGBa.TRANSPARENT
-        drawer.rectangle(state.bounds)
+        drawer.rectangle(bounds)
     }
 
     if (DebugSettings.trails) {

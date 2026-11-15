@@ -117,7 +117,7 @@ class PheromoneMap {
     }
 
     fun publishCache() {
-        cache.publish()
+        cache.publish(this.cacheBounds)
     }
 
     fun depositTrail(trailIdx: Int)
