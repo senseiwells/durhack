@@ -26,7 +26,7 @@ object CoreSettings {
     @IntParameter("clamping angle", 2, 90)
     var clampingAngle = 4
 
-    @IntParameter("seed", -1, Int.MAX_VALUE)
+    @IntParameter("seed", Int.MIN_VALUE, Int.MAX_VALUE)
     var seed = 0
 
     // @XYParameter("center", minX = 0.0, maxX = 1000.0, minY = 0.0, maxY = 700.0)

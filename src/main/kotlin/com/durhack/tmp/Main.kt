@@ -45,16 +45,16 @@ fun main() = application {
     }
 
     val simulationDispatcher = createSimulationDispatcher()
-    val simulationContext = CoroutineScope(simulationDispatcher + Job() + CoroutineName("Simulation Coroutine"))
+    val simulationScope = CoroutineScope(simulationDispatcher + Job() + CoroutineName("Simulation Coroutine"))
     program {
         world = createWorld()
 
         initTextures()
         addGui()
-        addListeners()
+        addListeners(simulationScope)
         recenterShit()
 
-        simulationContext.launch {
+        simulationScope.launch {
             while (true) {
                 runSimulationStep()
             }
@@ -82,6 +82,8 @@ suspend fun runSimulationStep() {
 
     if (tickTime < targetTickTime) {
         delay(targetTickTime - tickTime)
+    } else {
+        delay(1.nanoseconds)
     }
 }
 
@@ -112,7 +114,7 @@ fun Program.addGui() {
     }
 }
 
-fun Program.addListeners() {
+fun Program.addListeners(simulationScope: CoroutineScope) {
     mouse.dragged.listen { event ->
         if (event.position.x > GUI_WIDTH) {
             offset += event.dragDisplacement
@@ -127,8 +129,11 @@ fun Program.addListeners() {
 
     keyboard.keyDown.listen { event ->
         if (event.name == "r") {
-            setAntRandom(if (CoreSettings.seed == -1) Random.nextInt() else CoreSettings.seed)
-            world = createWorld()
+            simulationScope.launch {
+                setAntRandom(-1337620937)
+                // setAntRandom(if (CoreSettings.seed == -1) Random.nextInt() else CoreSettings.seed)
+                world = createWorld()
+            }
         }
     }
 }
@@ -158,14 +163,14 @@ fun Program.createWorld(): World {
         world.createAnt(colony2)
     }
 
-    val colony3 = world.createColony(centre + Vector2(150.0, 150.0), ColorRGBa.YELLOW)
+    val colony3 = world.createColony(centre + Vector2(150.0, 200.0), ColorRGBa.YELLOW)
     repeat(CoreSettings.ants) {
         world.createAnt(colony3)
     }
 
     world.createRandomFood(CoreSettings.food)
 
-    world.createDistributedObstacles()
+    world.createObstaclesBetweenColoniesAndFood()
     return world
 }
 
