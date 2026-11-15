@@ -2,6 +2,7 @@ package com.durhack.tmp.actions
 
 import com.durhack.tmp.Ant
 import com.durhack.tmp.AntRandom
+import com.durhack.tmp.CoreSettings
 import com.durhack.tmp.degreesBetween
 import com.durhack.tmp.weightedIndex
 import org.openrndr.math.Polar
@@ -30,7 +31,7 @@ class AdventuringAction(
 
         val newDir = 360.0 / SAMPLE_POINTS * index
         val desiredTurn = degreesBetween(this.ant.dir, newDir)
-        val actualTurn = desiredTurn.coerceIn(-CLAMPING_ANGLE, CLAMPING_ANGLE)
+        val actualTurn = desiredTurn.coerceIn(-CoreSettings.clampingAngle.toDouble(), CoreSettings.clampingAngle.toDouble())
         this.ant.dir += actualTurn
 
         this.ant.move(1 - (abs(actualTurn - desiredTurn) / 180))
@@ -50,6 +51,5 @@ class AdventuringAction(
 
     companion object {
         const val SAMPLE_POINTS = 12
-        const val CLAMPING_ANGLE = 10.0
     }
 }
