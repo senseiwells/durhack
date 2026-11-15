@@ -20,11 +20,13 @@ import org.openrndr.shape.Rectangle
 
 private lateinit var antTex: ColorBuffer
 private lateinit var fireTex: ColorBuffer
+private lateinit var foodTex: ColorBuffer
 
 fun Program.initTextures()
 {
     antTex = loadImage("./data/images/ant.png")
     fireTex = loadImage("./data/images/fire.png")
+    foodTex = loadImage("./data/images/burger.png")
 }
 
 fun recolor(src: ColorBuffer, color: ColorRGBa): ColorBuffer
@@ -57,12 +59,10 @@ fun Program.renderWorld(world: WorldRenderState) {
         drawer.circle(colony.pos, 4.0)
     }
 
-    drawer.fill = ColorRGBa.SADDLE_BROWN
     for (food in world.food) {
-        drawer.circle(food.pos, 3.0)
+        drawer.imageCentered(foodTex, food.pos, 6.0, 0.0)
     }
 
-    drawer.fill = ColorRGBa.DARK_ORANGE
     for (obstacle in world.obstacles) {
         drawer.imageCentered(fireTex, obstacle.pos, obstacle.radius, 0.0)
     }
