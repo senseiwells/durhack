@@ -31,8 +31,8 @@ private var zoom = 1.0
 
 private lateinit var world: World
 
-private var tps = 0.0
-
+private var tps = DoubleArray(100)
+private var fps = DoubleArray(100)
 
 fun main() = application {
     configure {
@@ -77,7 +77,7 @@ suspend fun runSimulationStep() {
     val tickTime = measureNanoTime {
         world.tick()
     }.nanoseconds
-    tps = 1.seconds / tickTime
+    tps[world.ticks % 100] = 1.seconds / tickTime
 
     if (tickTime < targetTickTime) {
         delay(targetTickTime - tickTime)
@@ -93,11 +93,20 @@ fun Program.addGui() {
     gui.add(DebugSettings, "Debug")
     extend(gui)
 
+    var frames = 0
+    var lastSeconds = 0.0
+    extend {
+        fps[frames++ % 100] = 1 / (seconds - lastSeconds)
+        lastSeconds = seconds
+    }
+
     val font = loadFont("data/fonts/default.otf", 24.0)
     extend {
         drawer.fill = ColorRGBa.WHITE
         drawer.fontMap = font
-        drawer.text("%.1f TPS".format(tps), GUI_WIDTH + 10.0, 32.0)
+
+        drawer.text("%.1f FPS".format(fps.average()), GUI_WIDTH + 10.0, 30.0)
+        drawer.text("%.1f TPS".format(tps.average()), GUI_WIDTH + 10.0, 58.0)
     }
 }
 
