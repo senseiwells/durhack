@@ -57,7 +57,7 @@ fun Program.renderColonyDebug(buf: ColorBuffer, state: ColonyRenderState) {
 
     // Draw cache outline
     if (DebugSettings.cache) {
-        drawer.stroke = ColorRGBa.RED
+        drawer.stroke = state.color
         drawer.strokeWeight = 1.0
         drawer.fill = ColorRGBa.TRANSPARENT
         drawer.rectangle(bounds)
@@ -65,6 +65,8 @@ fun Program.renderColonyDebug(buf: ColorBuffer, state: ColonyRenderState) {
 
     if (DebugSettings.trails) {
         drawer.strokeWeight = 0.1
+        drawer.stroke = state.color
+        drawer.fill = state.color
         for (trail in state.trails)
             for ((p0, p1) in trail)
                 drawer.lineSegment(p0, p1)
