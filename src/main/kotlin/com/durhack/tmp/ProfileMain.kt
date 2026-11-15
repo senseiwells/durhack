@@ -1,6 +1,5 @@
 package com.durhack.tmp
 
-import com.durhack.tmp.bleeding_edge.PheromoneMap2
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import java.nio.file.Path
@@ -9,7 +8,7 @@ import kotlin.system.measureNanoTime
 
 fun main()
 {
-    var pheremoneMap = PheromoneMap2()
+    var pheremoneMap = PheromoneMap()
 
     val path = Path.of("./trails.json")
     pheremoneMap.trails = Json.decodeFromStream(path.inputStream())

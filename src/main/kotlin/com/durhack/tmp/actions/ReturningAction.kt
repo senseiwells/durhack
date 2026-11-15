@@ -3,8 +3,8 @@ package com.durhack.tmp.actions
 import com.durhack.tmp.Ant
 import com.durhack.tmp.AntLogger
 import com.durhack.tmp.CoreSettings
+import com.durhack.tmp.PheromoneTrail
 import com.durhack.tmp.angleTowards
-import com.durhack.tmp.bleeding_edge.PheromoneTrail
 import com.durhack.tmp.closerThan
 import com.durhack.tmp.wrapDegrees
 import org.openrndr.math.asDegrees
@@ -18,7 +18,7 @@ class ReturningAction(
 
     private val returningPathLength = this.ant.adventuringTrail.zipWithNext().sumOf { (a, b) -> a.distanceTo(b) }
     private val optimalPathLength = this.ant.pos.distanceTo(this.ant.adventuringTrail.first())
-    private val strength = (optimalPathLength / this.returningPathLength).pow(4.0)
+    private val strength = (100.0 / this.returningPathLength).pow(1.5)
 
     init {
         this.ant.dir = Math.toDegrees(this.ant.pos.angleTowards(this.ant.colony.pos))

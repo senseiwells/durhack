@@ -54,7 +54,7 @@ class World {
         for (colony in this.colonies) {
             for (food in this.food) {
                 val direction = food.pos - colony.pos
-                val fire = Fire(colony.pos + direction / 2.0, AntRandom.nextDouble(5.0, 12.0))
+                val fire = Fire(colony.pos + direction / 2.0, AntRandom.nextDouble(5.0, 8.0))
                 this.obstacles.add(fire)
             }
         }
@@ -74,13 +74,13 @@ class World {
         for (colony in this.colonies) {
             colony.pheromone.evaporate()
             val elapsed = measureTimeMillis { colony.pheromone.makeCache() }
-            if (elapsed > 100.0 && !savedTrail)
-            {
-                val path = Path.of("./trails.json")
-                Json.encodeToStream(colonies.first().pheromone.trails, path.outputStream())
-                AntLogger.info { "Saving trails" }
-                savedTrail = true
-            }
+            // if (elapsed > 100.0 && !savedTrail)
+            // {
+            //     val path = Path.of("./trails.json")
+            //     Json.encodeToStream(colonies.first().pheromone.trails, path.outputStream())
+            //     AntLogger.info { "Saving trails" }
+            //     savedTrail = true
+            // }
         }
 
         this.ants.forEach(Ant::tick)

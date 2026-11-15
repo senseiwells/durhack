@@ -1,5 +1,6 @@
 package com.durhack.tmp.rendering
 
+import com.durhack.tmp.CACHE_WIDTH
 import com.durhack.tmp.DebugSettings
 import org.openrndr.Program
 import org.openrndr.color.ColorRGBa
@@ -44,7 +45,7 @@ fun Program.renderColonyDebug(buf: ColorBuffer, state: ColonyRenderState) {
     val cache = state.buffer.latest()
     for (y in 0..<buf.height) {
         for (x in 0..<buf.width) {
-            val howSmelly = cache[y * 500 + x]
+            val howSmelly = cache[y * CACHE_WIDTH + x].strength
             buf.shadow[x, y] = ColorRGBa(howSmelly, howSmelly, howSmelly)
         }
     }

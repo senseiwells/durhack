@@ -6,9 +6,11 @@ import kotlinx.coroutines.*
 import org.openrndr.ExtensionStage
 import org.openrndr.Program
 import org.openrndr.application
+import org.openrndr.color.ColorRGBa
 import org.openrndr.draw.MagnifyingFilter
 import org.openrndr.draw.MinifyingFilter
 import org.openrndr.draw.colorBuffer
+import org.openrndr.draw.loadFont
 import org.openrndr.extra.gui.GUI
 import org.openrndr.extra.gui.GUIAppearance
 import org.openrndr.math.Vector2
@@ -18,6 +20,7 @@ import kotlin.math.pow
 import kotlin.system.measureNanoTime
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.nanoseconds
+import kotlin.time.Duration.Companion.seconds
 
 private const val GUI_WIDTH = 300
 
@@ -25,6 +28,8 @@ private var offset = Vector2.ZERO
 private var zoom = 1.0
 
 private lateinit var world: World
+
+private var tps = 0.0
 
 
 fun main() = application {
@@ -70,6 +75,8 @@ suspend fun runSimulationStep() {
     val tickTime = measureNanoTime {
         world.tick()
     }.nanoseconds
+    tps = 1.seconds / tickTime
+
     if (tickTime < targetTickTime) {
         delay(targetTickTime - tickTime)
     }
@@ -82,6 +89,13 @@ fun Program.addGui() {
     gui.add(CoreSettings, "Settings")
     gui.add(DebugSettings, "Debug")
     extend(gui)
+
+    val font = loadFont("data/fonts/default.otf", 64.0)
+    extend {
+        drawer.fill = ColorRGBa.RED
+        drawer.fontMap = font
+        drawer.text("$tps", width - 200.0, 100.0)
+    }
 }
 
 fun Program.addListeners() {

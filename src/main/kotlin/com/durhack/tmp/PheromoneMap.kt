@@ -18,16 +18,20 @@ data class TrailPoint(
     var strength: Double
 )
 
+data class CachePoint(
+    var trailEpoch: Int,
+    var strength: Double
+)
 typealias PheromoneTrail = MutableList<TrailPoint>
 
-private const val CACHE_WIDTH = 500
+const val CACHE_WIDTH = 500
 private const val CACHE_HEIGHT = 500
 private const val RADIUS = 5.0
 private const val CLEANUP_THRESH = 1e-2
 
 class PheromoneMap {
     var trails = mutableListOf<PheromoneTrail>()
-    val cache = TripleBuffer(CACHE_WIDTH * CACHE_HEIGHT)
+    var cache = TripleBuffer(CACHE_WIDTH * CACHE_HEIGHT)
     var cacheBounds = Rectangle(Vector2(0.0, 0.0), 1.0, 1.0)
 
     fun createTrail(): PheromoneTrail
@@ -47,7 +51,7 @@ class PheromoneMap {
         val cPos = worldPointToCache(pos)
         if (cPos.x !in 0..<CACHE_WIDTH) return 0.0
         if (cPos.y !in 0..<CACHE_HEIGHT) return 0.0
-        return cache.writeBuffer[cPos.y * CACHE_WIDTH + cPos.x]
+        return cache.writeBuffer[cPos.y * CACHE_WIDTH + cPos.x].strength
     }
 
     fun evaporate()
@@ -66,23 +70,91 @@ class PheromoneMap {
         trails.removeIf { trail -> trail.isEmpty() }
     }
 
-    fun makeCache() {
-        cache.writeBuffer.fill(0.0)
+    fun makeCache()
+    {
+        for (i in 0..<(CACHE_WIDTH * CACHE_HEIGHT)) cache.writeBuffer[i] = CachePoint(-1, 0.0)
 
-        if (this.trails.sumOf { it.size } <= 0) {
-            return
-        }
-
+        // Update cacheBounds
+        if (this.trails.sumOf { it.size } <= 0) return
         cacheBounds = getBounds()
         cacheBounds = cacheBounds.offsetEdges(RADIUS * 2)
 
-        for (trail in trails)
-            for ((p0, p1) in trail.zipWithNext())
-                depositSegment(p0, p1)
+        for (trailIdx in trails.indices)
+            depositTrail(trailIdx)
+    }
+
+    // Returns 'true' if flooding should continue
+    fun updateCachePoint(cp: IntVector2, trailIdx: Int, trailPointIdx: Int): Boolean
+    {
+        // Lookup cache point and check if it was reached earlier
+        val cachePoint = cache.writeBuffer[cp.y * CACHE_WIDTH + cp.x]
+        if (trailIdx == cachePoint.trailEpoch) return false
+
+        // Update trailEpoch
+        cachePoint.trailEpoch = trailIdx
+
+        // Calculate strength
+        var dist = Double.POSITIVE_INFINITY
+        val p1 = trails[trailIdx][trailPointIdx]
+        val worldPos = cachePointToWorld(cp)
+        if (trailPointIdx > 0)
+        {
+            val p0 = trails[trailIdx][trailPointIdx - 1]
+            dist = min(dist, distToLine(p0.pos, p1.pos, worldPos))
+        }
+        if (trailPointIdx < trails[trailIdx].size - 1)
+        {
+            val p2 = trails[trailIdx][trailPointIdx + 1]
+            dist = min(dist, distToLine(p1.pos, p2.pos, worldPos))
+        }
+        val newStrength = p1.strength / exp(dist * 2.0)
+
+        // Update point strength
+        val isBetter = (newStrength > cachePoint.strength)
+        cachePoint.strength = max(cachePoint.strength, newStrength)
+
+        return isBetter && newStrength > CLEANUP_THRESH
     }
 
     fun publishCache() {
         cache.publish()
+    }
+
+    fun depositTrail(trailIdx: Int)
+    {
+        // Build a frontier around the trail
+        var frontier = mutableListOf<Pair<IntVector2, Int>>()
+        for (trailPointIdx in trails[trailIdx].indices)
+        {
+            val cp = worldPointToCache(trails[trailIdx][trailPointIdx].pos)
+            for (dy in 0..1)
+            {
+                for (dx in 0..1)
+                {
+                    val cornerPos = cp + IntVector2(dx, dy)
+                    val shouldFlood = updateCachePoint(cornerPos, trailIdx, trailPointIdx)
+                    if (shouldFlood) frontier.add(Pair(cornerPos, trailPointIdx))
+                }
+            }
+        }
+
+        // Expand the frontier until pheromone until flooding stops
+        val deltas = listOf(IntVector2(-1, 0), IntVector2(1, 0), IntVector2(0, -1), IntVector2(0, 1))
+        do
+        {
+            val newFrontier = mutableListOf<Pair<IntVector2, Int>>()
+            for ((cp, trailPointIdx) in frontier)
+            {
+                for (delta in deltas)
+                {
+                    val newPoint = cp + delta
+                    val shouldFlood = updateCachePoint(newPoint, trailIdx, trailPointIdx)
+                    if (shouldFlood) newFrontier.add(Pair(newPoint, trailPointIdx))
+                }
+            }
+
+            frontier = newFrontier
+        } while (frontier.isNotEmpty())
     }
 
     private fun cachePointToWorld(cPoint: IntVector2): Vector2
@@ -100,34 +172,7 @@ class PheromoneMap {
         cPoint -= cacheBounds.corner
         cPoint /= cacheBounds.dimensions
         cPoint *= Vector2(CACHE_WIDTH - 1, CACHE_HEIGHT - 1)
-        return nearestIntPoint(cPoint)
-    }
-
-    private fun depositSegment(p0: TrailPoint, p1: TrailPoint)
-    {
-        val strength = (p0.strength + p1.strength) * 0.5
-
-        val cp0 = worldPointToCache(p0.pos)
-        val cp1 = worldPointToCache(p1.pos)
-        val spacing = cacheBounds.dimensions / Vector2(CACHE_WIDTH - 1, CACHE_HEIGHT - 1)
-        val cRadius = Vector2(RADIUS) / spacing
-
-        var cLineBounds = IntRectangle(min(cp0, cp1), abs(cp1.x - cp0.x), abs(cp1.y - cp0.y))
-        cLineBounds = cLineBounds.offsetEdges(ceil(cRadius.x).toInt(), ceil(cRadius.y).toInt())
-
-        for (dy in 0..<cLineBounds.height)
-        {
-            for (dx in 0..<cLineBounds.width)
-            {
-                val cx = cLineBounds.corner.x + dx
-                val cy = cLineBounds.corner.y + dy
-
-                val worldPos = cachePointToWorld(IntVector2(cx, cy))
-                val dist = distToLine(p0.pos, p1.pos, worldPos)
-                val smell = strength / exp(dist * 2.0)
-                cache.writeBuffer[cy * CACHE_WIDTH + cx] = max(cache.writeBuffer[cy * CACHE_WIDTH + cx], smell)
-            }
-        }
+        return floorIntPoint(cPoint)
     }
 
     private fun getBounds(): Rectangle
