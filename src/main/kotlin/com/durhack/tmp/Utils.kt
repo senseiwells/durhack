@@ -6,6 +6,7 @@ import org.openrndr.math.IntVector2
 import org.openrndr.math.Vector2
 import org.openrndr.shape.IntRectangle
 import kotlin.math.atan2
+import kotlin.math.floor
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -46,6 +47,11 @@ fun Vector2(p: IntVector2): Vector2
 fun nearestIntPoint(p: Vector2): IntVector2
 {
     return IntVector2(p.x.roundToInt(), p.y.roundToInt())
+}
+
+fun floorIntPoint(p: Vector2): IntVector2
+{
+    return IntVector2(floor(p.x).toInt(), floor(p.y).toInt())
 }
 
 fun min(p0: IntVector2, p1: IntVector2): IntVector2

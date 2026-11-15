@@ -3,8 +3,8 @@ package com.durhack.tmp.actions
 import com.durhack.tmp.Ant
 import com.durhack.tmp.AntLogger
 import com.durhack.tmp.CoreSettings
-import com.durhack.tmp.PheromoneTrail
 import com.durhack.tmp.angleTowards
+import com.durhack.tmp.bleeding_edge.PheromoneTrail
 import com.durhack.tmp.closerThan
 import com.durhack.tmp.wrapDegrees
 import org.openrndr.math.asDegrees
