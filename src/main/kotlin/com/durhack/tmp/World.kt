@@ -87,7 +87,7 @@ class World {
 
     private fun extractRenderState() {
         this.renderState = WorldRenderState(
-            this.ants.map { ant -> AntRenderState(ant.pos, ant.color(), ant.visible) },
+            this.ants.map { ant -> AntRenderState(ant.pos, ant.dir, ant.color(), ant.visible) },
             this.colonies.map { colony ->
                 val trails = colony.pheromone.trails.map { trail ->
                     trail.asSequence().filterIndexed { i, _ -> i % 10 == 0 }

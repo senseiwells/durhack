@@ -5,6 +5,7 @@ import org.openrndr.math.Vector2
 
 class AntRenderState(
     val pos: Vector2,
+    val dir: Double,
     val color: ColorRGBa,
     val visible: Boolean,
 )

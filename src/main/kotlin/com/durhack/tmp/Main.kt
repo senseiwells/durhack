@@ -1,5 +1,6 @@
 package com.durhack.tmp
 
+import com.durhack.tmp.rendering.initTextures
 import com.durhack.tmp.rendering.renderDebug
 import com.durhack.tmp.rendering.renderWorld
 import kotlinx.coroutines.*
@@ -47,6 +48,7 @@ fun main() = application {
     program {
         world = createWorld()
 
+        initTextures()
         addGui()
         addListeners()
         recenterShit()
@@ -84,17 +86,18 @@ suspend fun runSimulationStep() {
 
 fun Program.addGui() {
     val gui = GUI(GUIAppearance(barWidth = GUI_WIDTH))
+    gui.persistState = false
     gui.compartmentsCollapsedByDefault = false
 
     gui.add(CoreSettings, "Settings")
     gui.add(DebugSettings, "Debug")
     extend(gui)
 
-    val font = loadFont("data/fonts/default.otf", 64.0)
+    val font = loadFont("data/fonts/default.otf", 24.0)
     extend {
-        drawer.fill = ColorRGBa.RED
+        drawer.fill = ColorRGBa.WHITE
         drawer.fontMap = font
-        drawer.text("$tps", width - 200.0, 100.0)
+        drawer.text("%.1f TPS".format(tps), GUI_WIDTH + 10.0, 32.0)
     }
 }
 
