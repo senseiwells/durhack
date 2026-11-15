@@ -5,13 +5,20 @@ import com.durhack.tmp.rendering.ColonyRenderState
 import com.durhack.tmp.rendering.FoodRenderState
 import com.durhack.tmp.rendering.ObstacleRenderState
 import com.durhack.tmp.rendering.WorldRenderState
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.encodeToStream
 import org.openrndr.math.Vector2
+import java.nio.file.Path
+import kotlin.io.path.outputStream
+import kotlin.system.measureNanoTime
+import kotlin.system.measureTimeMillis
 
 class World {
     val colonies = mutableListOf<Colony>()
     val ants = mutableListOf<Ant>()
     val food = mutableListOf<Food>()
     val obstacles = mutableListOf<Fire>()
+    var savedTrail = false
 
     var ticks = 0
 
@@ -66,7 +73,14 @@ class World {
 
         for (colony in this.colonies) {
             colony.pheromone.evaporate()
-            colony.pheromone.makeCache()
+            val elapsed = measureTimeMillis { colony.pheromone.makeCache() }
+            if (elapsed > 100.0 && !savedTrail)
+            {
+                val path = Path.of("./trails.json")
+                Json.encodeToStream(colonies.first().pheromone.trails, path.outputStream())
+                AntLogger.info { "Saving trails" }
+                savedTrail = true
+            }
         }
 
         this.ants.forEach(Ant::tick)
