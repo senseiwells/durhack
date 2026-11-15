@@ -60,7 +60,7 @@ fun Program.renderWorld(world: WorldRenderState) {
     }
 
     for (food in world.food) {
-        drawer.imageCentered(foodTex, food.pos, 6.0, 0.0)
+        drawer.imageCentered(foodTex, food.pos, food.remaining / 100.0, 0.0)
     }
 
     for (obstacle in world.obstacles) {

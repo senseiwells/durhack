@@ -18,7 +18,8 @@ class ColonyRenderState(
 )
 
 class FoodRenderState(
-    val pos: Vector2
+    val pos: Vector2,
+    val remaining: Int
 )
 
 class ObstacleRenderState(

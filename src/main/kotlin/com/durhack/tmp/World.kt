@@ -107,7 +107,7 @@ class World {
                 }
                 ColonyRenderState(colony.pos, colony.color, trails, colony.pheromone.cache)
             },
-            this.food.map { food -> FoodRenderState(food.pos) },
+            this.food.map { food -> FoodRenderState(food.pos, food.remaining) },
             this.obstacles.map { obstacle -> ObstacleRenderState(obstacle.pos, obstacle.radius) },
             this.casinos.map { casino -> CasinoRenderState(casino.pos) }
         )
