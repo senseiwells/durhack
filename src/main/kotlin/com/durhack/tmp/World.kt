@@ -23,14 +23,15 @@ class World {
     }
 
     fun createFood(pos: Vector2) {
-        val food = Food(pos)
+        val food = Food(pos, CoreSettings.foodAmount)
         this.food.add(food)
     }
 
     fun createRandomFood(foodPerColony: Int = 1) {
         for (colony in this.colonies) {
             repeat(foodPerColony) {
-                this.createFood(colony.pos + Vector2.random(200.0))
+                val offset = Vector2.random(CoreSettings.foodRandomDistance.toDouble())
+                this.createFood(colony.pos + offset)
             }
         }
     }

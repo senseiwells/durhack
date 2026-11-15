@@ -2,6 +2,7 @@ package com.durhack.tmp.actions
 
 import com.durhack.tmp.Ant
 import com.durhack.tmp.AntLogger
+import com.durhack.tmp.CoreSettings
 import com.durhack.tmp.PheromoneTrail
 import com.durhack.tmp.angleTowards
 import com.durhack.tmp.closerThan
@@ -29,7 +30,7 @@ class ReturningAction(
 
     override fun act(): Action {
         var targetIndex = this.ant.adventuringTrail.indexOfFirst { pos ->
-            this.ant.pos.closerThan(pos, this.ant.traits.speed * 4)
+            this.ant.pos.closerThan(pos, this.ant.traits.speed * CoreSettings.pathSmoothing)
         }
         if (targetIndex == -1) {
             AntLogger.error { "Not on trail>?>!>!>??!?" }
