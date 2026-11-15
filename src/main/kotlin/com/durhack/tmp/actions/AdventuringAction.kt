@@ -1,6 +1,7 @@
 package com.durhack.tmp.actions
 
 import com.durhack.tmp.Ant
+import com.durhack.tmp.AntRandom
 import com.durhack.tmp.CoreSettings
 import com.durhack.tmp.degreesBetween
 import com.durhack.tmp.weightedIndex

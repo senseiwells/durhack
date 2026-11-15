@@ -51,6 +51,7 @@ class Ant private constructor(
         this.currentAction = RestingAction(this)
 
         this.tiredness = 50
+        this.food = 0
     }
 
     fun color(): ColorRGBa {
