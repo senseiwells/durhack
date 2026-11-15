@@ -41,9 +41,8 @@ fun main() = application {
         windowResizable = true
     }
 
-    val simulationDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    val simulationDispatcher = createSimulationDispatcher()
     val simulationContext = CoroutineScope(simulationDispatcher + Job() + CoroutineName("Simulation Coroutine"))
-
     program {
         world = createWorld()
 
@@ -140,4 +139,12 @@ fun Program.createWorld(): World {
 
     // world.createObstaclesBetweenColoniesAndFood()
     return world
+}
+
+private fun createSimulationDispatcher(): ExecutorCoroutineDispatcher {
+    return Executors.newSingleThreadExecutor { runnable ->
+        val thread = Thread(runnable)
+        thread.isDaemon = true
+        thread
+    }.asCoroutineDispatcher()
 }
