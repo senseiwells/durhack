@@ -11,6 +11,7 @@ class AntRenderState(
 
 class ColonyRenderState(
     val pos: Vector2,
+    val color: ColorRGBa,
     val trails: List<List<Pair<Vector2, Vector2>>>,
     val buffer: TripleBuffer,
 )

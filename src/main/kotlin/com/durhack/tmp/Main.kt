@@ -11,6 +11,7 @@ import org.openrndr.draw.MagnifyingFilter
 import org.openrndr.draw.MinifyingFilter
 import org.openrndr.draw.colorBuffer
 import org.openrndr.draw.loadFont
+import org.openrndr.extra.color.presets.LAWN_GREEN
 import org.openrndr.extra.gui.GUI
 import org.openrndr.extra.gui.GUIAppearance
 import org.openrndr.math.Vector2
@@ -130,19 +131,19 @@ fun Program.recenterShit() {
 
 fun Program.createWorld(): World {
     val world = World()
-    val colony = world.createColony(centre)
+    val colony = world.createColony(centre, ColorRGBa.RED)
     repeat(CoreSettings.ants) {
         world.createAnt(colony)
     }
 
-    val colony2 = world.createColony(centre + Vector2(300.0, 0.0))
+    val colony2 = world.createColony(centre + Vector2(300.0, 0.0), ColorRGBa.LAWN_GREEN)
     repeat(CoreSettings.ants) {
         world.createAnt(colony2)
     }
 
     world.createRandomFood(CoreSettings.food)
 
-    // world.createObstaclesBetweenColoniesAndFood()
+    world.createObstaclesBetweenColoniesAndFood()
     return world
 }
 

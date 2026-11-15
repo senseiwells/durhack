@@ -63,15 +63,17 @@ class Ant private constructor(
     }
 
     fun die() {
-        this.dead = true
+        // this.dead = true
+        this.pos = this.colony.pos
+        this.currentAction = RestingAction(this)
+
+        this.happiness = 70
+        this.tiredness = 50
+        this.hungriness = 0
     }
 
     fun color(): ColorRGBa {
-        return when (this.currentAction) {
-            is GatheringAction -> ColorRGBa.GREEN
-            is ReturningAction -> if (this.colony.id == 0) ColorRGBa.HOT_PINK else ColorRGBa.PURPLE
-            else -> if (this.colony.id == 0) ColorRGBa.BLUE else ColorRGBa.AQUAMARINE
-        }
+        return this.colony.color
     }
 
     fun onReturnToColony() {

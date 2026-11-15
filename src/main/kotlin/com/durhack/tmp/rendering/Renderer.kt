@@ -4,6 +4,7 @@ import com.durhack.tmp.CACHE_WIDTH
 import com.durhack.tmp.DebugSettings
 import org.openrndr.Program
 import org.openrndr.color.ColorRGBa
+import org.openrndr.draw.BlendMode
 import org.openrndr.draw.ColorBuffer
 import org.openrndr.extra.color.colormatrix.tint
 import org.openrndr.extra.color.presets.DARK_ORANGE
@@ -29,7 +30,7 @@ fun Program.renderWorld(world: WorldRenderState) {
 
     for (ant in world.ants) {
         if (ant.visible) {
-            drawer.fill = ant.color
+            drawer.fill = ant.color.copy(alpha = 0.5)
             drawer.circle(ant.pos, 2.0)
         }
     }
@@ -46,11 +47,12 @@ fun Program.renderColonyDebug(buf: ColorBuffer, state: ColonyRenderState) {
     for (y in 0..<buf.height) {
         for (x in 0..<buf.width) {
             val howSmelly = cache[y * CACHE_WIDTH + x].strength
-            buf.shadow[x, y] = if (howSmelly <= 0.0) ColorRGBa.TRANSPARENT else ColorRGBa(howSmelly, howSmelly, howSmelly)
+            buf.shadow[x, y] = state.color.copy(alpha = howSmelly)
         }
     }
     buf.shadow.upload()
 
+    drawer.drawStyle.blendMode = BlendMode.BLEND
     drawer.image(buf, bounds)
 
     // Draw cache outline

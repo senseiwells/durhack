@@ -7,8 +7,10 @@ import com.durhack.tmp.rendering.ObstacleRenderState
 import com.durhack.tmp.rendering.WorldRenderState
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToStream
+import org.openrndr.color.ColorRGBa
 import org.openrndr.math.Vector2
 import java.nio.file.Path
+import java.util.IdentityHashMap
 import kotlin.io.path.outputStream
 import kotlin.system.measureNanoTime
 import kotlin.system.measureTimeMillis
@@ -24,8 +26,8 @@ class World {
 
     var renderState = WorldRenderState()
 
-    fun createColony(pos: Vector2): Colony {
-        val colony = Colony(pos)
+    fun createColony(pos: Vector2, color: ColorRGBa): Colony {
+        val colony = Colony(pos, color)
         this.colonies.add(colony)
         return colony
     }
@@ -88,7 +90,7 @@ class World {
 
         this.food.removeIf(Food::isDepleted)
         if (this.food.isEmpty()) {
-            this.createRandomFood(30)
+            this.createRandomFood(CoreSettings.food)
         }
 
         for (colony in this.colonies) {
@@ -107,7 +109,7 @@ class World {
                         .zipWithNext()
                         .toList()
                 }
-                ColonyRenderState(colony.pos, trails, colony.pheromone.cache)
+                ColonyRenderState(colony.pos, colony.color, trails, colony.pheromone.cache)
             },
             this.food.map { food -> FoodRenderState(food.pos) },
             this.obstacles.map { obstacle -> ObstacleRenderState(obstacle.pos, obstacle.radius) },
