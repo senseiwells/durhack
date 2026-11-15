@@ -82,7 +82,7 @@ class Ant private constructor(
         private var ID_COUNTER = 0
 
         fun create(world: World, colony: Colony, traits: Traits = Traits.random()): Ant {
-            return Ant(world, colony, traits, colony.pos, 0.0)
+            return Ant(world, colony, traits, colony.pos, AntRandom.nextDouble() * 360)
         }
     }
 }
