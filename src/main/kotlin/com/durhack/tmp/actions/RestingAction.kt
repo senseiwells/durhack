@@ -11,7 +11,7 @@ class RestingAction(
             this.ant.tiredness -= 1
         }
 
-        if (this.ant.hungriness > 30 && this.ant.tiredness < 20) {
+        if (this.ant.tiredness < 20) {
             return AdventuringAction(this.ant)
         }
         return this

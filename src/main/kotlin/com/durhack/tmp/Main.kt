@@ -139,6 +139,8 @@ fun Program.createWorld(): World {
         world.createAnt(colony)
     }
 
+    world.createCasino(centre + Vector2(150.0, 0.0))
+
     val colony2 = world.createColony(centre + Vector2(300.0, 0.0), ColorRGBa.LAWN_GREEN)
     repeat(CoreSettings.ants) {
         world.createAnt(colony2)

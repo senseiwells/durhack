@@ -1,7 +1,6 @@
 package com.durhack.tmp.actions
 
 import com.durhack.tmp.Ant
-import com.durhack.tmp.AntRandom
 import com.durhack.tmp.CoreSettings
 import com.durhack.tmp.degreesBetween
 import com.durhack.tmp.weightedIndex
@@ -37,9 +36,14 @@ class AdventuringAction(
         this.ant.move(1 - (abs(actualTurn - desiredTurn) / 180))
         this.addPosToTrail()
 
-        val nearest = this.ant.world.getNearestFood(this.ant.pos)
-        if (nearest.pos.distanceTo(this.ant.pos) < 10.0) {
-            return GatheringAction(this.ant, nearest)
+        val nearestCasino = this.ant.world.getNearestCasino(this.ant.pos)
+        if (nearestCasino != null && nearestCasino.pos.distanceTo(this.ant.pos) < 10.0) {
+            return GamblingAction(this.ant, nearestCasino)
+        }
+
+        val nearestFood = this.ant.world.getNearestFood(this.ant.pos)
+        if (nearestFood != null && nearestFood.pos.distanceTo(this.ant.pos) < 10.0) {
+            return GatheringAction(this.ant, nearestFood)
         }
 
         return this

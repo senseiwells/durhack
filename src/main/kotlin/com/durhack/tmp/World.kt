@@ -1,6 +1,7 @@
 package com.durhack.tmp
 
 import com.durhack.tmp.rendering.AntRenderState
+import com.durhack.tmp.rendering.CasinoRenderState
 import com.durhack.tmp.rendering.ColonyRenderState
 import com.durhack.tmp.rendering.FoodRenderState
 import com.durhack.tmp.rendering.ObstacleRenderState
@@ -13,7 +14,7 @@ class World {
     val ants = mutableListOf<Ant>()
     val food = mutableListOf<Food>()
     val obstacles = mutableListOf<Fire>()
-    var savedTrail = false
+    val casinos = mutableListOf<Casino>()
 
     var ticks = 0
 
@@ -36,6 +37,11 @@ class World {
         this.food.add(food)
     }
 
+    fun createCasino(pos: Vector2) {
+        val casino = Casino(pos)
+        this.casinos.add(casino)
+    }
+
     fun createRandomFood(foodPerColony: Int = 1) {
         for (colony in this.colonies) {
             repeat(foodPerColony) {
@@ -55,8 +61,12 @@ class World {
         }
     }
 
-    fun getNearestFood(pos: Vector2): Food {
-        return this.food.minBy { food -> food.pos.squaredDistanceTo(pos) }
+    fun getNearestCasino(pos: Vector2): Casino? {
+        return this.casinos.minByOrNull { casino -> casino.pos.squaredDistanceTo(pos) }
+    }
+
+    fun getNearestFood(pos: Vector2): Food? {
+        return this.food.minByOrNull { food -> food.pos.squaredDistanceTo(pos) }
     }
 
     fun checkIfImOnFire(pos: Vector2): Boolean {
@@ -99,6 +109,7 @@ class World {
             },
             this.food.map { food -> FoodRenderState(food.pos) },
             this.obstacles.map { obstacle -> ObstacleRenderState(obstacle.pos, obstacle.radius) },
+            this.casinos.map { casino -> CasinoRenderState(casino.pos) }
         )
     }
 }

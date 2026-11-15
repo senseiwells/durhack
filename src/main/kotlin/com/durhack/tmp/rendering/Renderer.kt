@@ -12,6 +12,7 @@ import org.openrndr.draw.isolated
 import org.openrndr.draw.loadImage
 import org.openrndr.extra.color.colormatrix.tint
 import org.openrndr.extra.color.presets.DARK_ORANGE
+import org.openrndr.extra.color.presets.PURPLE
 import org.openrndr.extra.color.presets.SADDLE_BROWN
 import org.openrndr.math.Vector2
 import org.openrndr.math.asRadians
@@ -64,6 +65,11 @@ fun Program.renderWorld(world: WorldRenderState) {
     drawer.fill = ColorRGBa.DARK_ORANGE
     for (obstacle in world.obstacles) {
         drawer.imageCentered(fireTex, obstacle.pos, obstacle.radius, 0.0)
+    }
+
+    drawer.fill = ColorRGBa.PURPLE
+    for (casino in world.casinos) {
+        drawer.circle(casino.pos, 4.0)
     }
 
     var coloredAnts = mutableMapOf<ColorRGBa, ColorBuffer>()

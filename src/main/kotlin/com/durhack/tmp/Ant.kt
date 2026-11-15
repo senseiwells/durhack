@@ -1,16 +1,10 @@
 package com.durhack.tmp
 
 import com.durhack.tmp.actions.Action
-import com.durhack.tmp.actions.GatheringAction
 import com.durhack.tmp.actions.RestingAction
-import com.durhack.tmp.actions.ReturningAction
 import org.openrndr.color.ColorRGBa
-import org.openrndr.extra.color.presets.AQUAMARINE
-import org.openrndr.extra.color.presets.HOT_PINK
-import org.openrndr.extra.color.presets.PURPLE
 import org.openrndr.math.Polar
 import org.openrndr.math.Vector2
-import kotlin.math.max
 
 class Ant private constructor(
     val world: World,
@@ -23,9 +17,8 @@ class Ant private constructor(
 
     val adventuringTrail = mutableListOf<Vector2>()
 
-    var happiness = 70
     var tiredness = 50
-    var hungriness = 0
+    var cashmoney = 1000
 
     var food = 0
 
@@ -45,16 +38,6 @@ class Ant private constructor(
             this.die()
         }
 
-        if (AntRandom.nextDouble() < 0.2) {
-            this.hungriness = max(100, this.hungriness + 1)
-        }
-        if (this.hungriness <= 0) {
-            this.happiness -= 1
-        }
-        if (this.happiness <= 0) {
-            this.die()
-        }
-
         this.currentAction = this.currentAction.act()
     }
 
@@ -67,9 +50,7 @@ class Ant private constructor(
         this.pos = this.colony.pos
         this.currentAction = RestingAction(this)
 
-        this.happiness = 70
         this.tiredness = 50
-        this.hungriness = 0
     }
 
     fun color(): ColorRGBa {

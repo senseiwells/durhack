@@ -25,3 +25,7 @@ class ObstacleRenderState(
     val pos: Vector2,
     val radius: Double
 )
+
+class CasinoRenderState(
+    val pos: Vector2
+)

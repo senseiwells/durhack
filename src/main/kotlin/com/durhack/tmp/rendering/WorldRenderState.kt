@@ -5,4 +5,5 @@ class WorldRenderState(
     val colonies: List<ColonyRenderState> = listOf(),
     val food: List<FoodRenderState> = listOf(),
     val obstacles: List<ObstacleRenderState> = listOf(),
+    val casinos: List<CasinoRenderState> = listOf()
 )
