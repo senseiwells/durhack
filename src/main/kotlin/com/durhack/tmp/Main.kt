@@ -19,6 +19,7 @@ import org.openrndr.math.Vector2
 import org.openrndr.math.clamp
 import java.util.concurrent.Executors
 import kotlin.math.pow
+import kotlin.random.Random
 import kotlin.system.measureNanoTime
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.nanoseconds
@@ -107,6 +108,7 @@ fun Program.addGui() {
 
         drawer.text("%.1f FPS".format(fps.average()), GUI_WIDTH + 10.0, 30.0)
         drawer.text("%.1f TPS".format(tps.average()), GUI_WIDTH + 10.0, 58.0)
+        drawer.text("Seed $AntRandomSeed", GUI_WIDTH + 10.0, 78.0)
     }
 }
 
@@ -125,6 +127,7 @@ fun Program.addListeners() {
 
     keyboard.keyDown.listen { event ->
         if (event.name == "r") {
+            setAntRandom(if (CoreSettings.seed == -1) Random.nextInt() else CoreSettings.seed)
             world = createWorld()
         }
     }
@@ -155,9 +158,14 @@ fun Program.createWorld(): World {
         world.createAnt(colony2)
     }
 
+    val colony3 = world.createColony(centre + Vector2(150.0, 150.0), ColorRGBa.YELLOW)
+    repeat(CoreSettings.ants) {
+        world.createAnt(colony3)
+    }
+
     world.createRandomFood(CoreSettings.food)
 
-    world.createObstaclesBetweenColoniesAndFood()
+    world.createDistributedObstacles()
     return world
 }
 

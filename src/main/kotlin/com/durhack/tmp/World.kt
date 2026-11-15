@@ -8,6 +8,7 @@ import com.durhack.tmp.rendering.ObstacleRenderState
 import com.durhack.tmp.rendering.WorldRenderState
 import org.openrndr.color.ColorRGBa
 import org.openrndr.math.Vector2
+import org.openrndr.shape.bounds
 
 class World {
     val colonies = mutableListOf<Colony>()
@@ -58,6 +59,22 @@ class World {
                 val fire = Fire(colony.pos + direction / 2.0, AntRandom.nextDouble(5.0, 8.0))
                 this.obstacles.add(fire)
             }
+        }
+    }
+
+    fun createDistributedObstacles() {
+        val bounds = this.colonies.map { it.pos }.bounds.offsetEdges(200.0)
+
+        while (this.obstacles.size < CoreSettings.obstacleCount) {
+            val pos = Vector2(
+                AntRandom.nextDouble(bounds.xRange.start, bounds.xRange.endExclusive),
+                AntRandom.nextDouble(bounds.yRange.start, bounds.yRange.endExclusive)
+            )
+            if (this.colonies.any { colony -> colony.pos.closerThan(pos, 15.0) }) {
+                continue
+            }
+
+            this.obstacles.add(Fire(pos, AntRandom.nextDouble(5.0, 8.0)))
         }
     }
 

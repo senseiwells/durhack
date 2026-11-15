@@ -11,12 +11,18 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-val AntRandom = Random(1)
+var AntRandomSeed = 0
+var AntRandom = Random(AntRandomSeed)
 
 val AntLogger = KotlinLogging.logger("AntLogger")
 
 val Program.centre: Vector2
     get() = Vector2(width / 2.0, height / 2.0)
+
+fun setAntRandom(seed: Int) {
+    AntRandomSeed = seed
+    AntRandom = Random(seed)
+}
 
 fun Vector2.Companion.random(scale: Double): Vector2 {
     return Vector2(

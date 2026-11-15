@@ -15,6 +15,9 @@ object CoreSettings {
     @IntParameter("food amount", 50, 5000)
     var foodAmount = 1000
 
+    @IntParameter("obstacle count", 0, 500)
+    var obstacleCount = 50
+
     @IntParameter("tps", 1, 1000)
     var tps = 1000
 
@@ -22,6 +25,9 @@ object CoreSettings {
     var pathSmoothing = 4
     @IntParameter("clamping angle", 2, 90)
     var clampingAngle = 4
+
+    @IntParameter("seed", -1, Int.MAX_VALUE)
+    var seed = 0
 
     // @XYParameter("center", minX = 0.0, maxX = 1000.0, minY = 0.0, maxY = 700.0)
     // var center = Vector2(500.0, 350.0)
